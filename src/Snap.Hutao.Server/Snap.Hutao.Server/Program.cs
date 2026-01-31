@@ -308,6 +308,8 @@ public static class Program
         using (IServiceScope scope = app.Services.CreateScope())
         {
             AppDbContext context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            MetadataDbContext metadataDbContext = scope.ServiceProvider.GetRequiredService<MetadataDbContext>();
+            metadataDbContext.Database.EnsureCreated();
             ILogger logger = scope.ServiceProvider.GetRequiredService<ILogger<IHost>>();
 
             if (context.Database.IsRelational())
@@ -336,11 +338,6 @@ public static class Program
                             context.Database.EnsureCreated();
                             logger.LogInformation("数据库创建完成");
                         }
-                        else
-                        {
-                            // 检查所有表是否存在，如果不存在则创建
-                            EnsureTablesCreated(context, logger);
-                        }
                     }
                 }
                 catch (Exception ex)
@@ -364,102 +361,6 @@ public static class Program
             {
                 logger.LogWarning("数据库不是关系型数据库，跳过迁移");
             }
-        }
-    }
-
-    /// <summary>
-    /// 确保所有表都已创建
-    /// </summary>
-    /// <param name="context">数据库上下文</param>
-    /// <param name="logger">日志记录器</param>
-    private static void EnsureTablesCreated(AppDbContext context, ILogger logger)
-    {
-        try
-        {
-            // 直接尝试查询git_repositories表，如果失败则创建表
-            bool needToCreateTables = false;
-
-            try
-            {
-                // 尝试查询git_repositories表
-                var count = context.GitRepositories.Count();
-                logger.LogInformation("git_repositories表已存在，包含 {Count} 条记录", count);
-            }
-            catch (Exception ex) when (ex.Message.Contains("doesn't exist") || ex.Message.Contains("不存在"))
-            {
-                logger.LogWarning("git_repositories表不存在: {Message}", ex.Message);
-                needToCreateTables = true;
-            }
-            catch (Exception ex)
-            {
-                logger.LogWarning("检查git_repositories表时出错: {Message}", ex.Message);
-                needToCreateTables = true;
-            }
-
-            if (needToCreateTables)
-            {
-                logger.LogWarning("尝试创建缺失的表...");
-
-                // 使用原始SQL创建表
-                CreateMissingTables(context, logger);
-            }
-            else
-            {
-                logger.LogInformation("所有数据库表已存在");
-            }
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "确保表创建时出错");
-        }
-    }
-
-    /// <summary>
-    /// 创建缺失的表
-    /// </summary>
-    /// <param name="context">数据库上下文</param>
-    /// <param name="logger">日志记录器</param>
-    private static void CreateMissingTables(AppDbContext context, ILogger logger)
-    {
-        try
-        {
-            // 创建git_repositories表
-            context.Database.ExecuteSqlRaw(@"
-                CREATE TABLE IF NOT EXISTS `git_repositories` (
-                    `Id` int NOT NULL AUTO_INCREMENT,
-                    `Name` longtext CHARACTER SET utf8mb4 NOT NULL,
-                    `HttpsUrl` longtext CHARACTER SET utf8mb4 NOT NULL,
-                    `WebUrl` longtext CHARACTER SET utf8mb4 NOT NULL,
-                    `Type` longtext CHARACTER SET utf8mb4 NOT NULL,
-                    `CreatedAt` datetime(6) NOT NULL,
-                    `UpdatedAt` datetime(6) NULL,
-                    PRIMARY KEY (`Id`)
-                ) CHARACTER SET utf8mb4;
-            ");
-            logger.LogInformation("git_repositories表创建成功");
-
-            // 创建tools表
-            context.Database.ExecuteSqlRaw(@"
-                CREATE TABLE IF NOT EXISTS `tools` (
-                    `Id` int NOT NULL AUTO_INCREMENT,
-                    `Name` longtext CHARACTER SET utf8mb4 NOT NULL,
-                    `Description` longtext CHARACTER SET utf8mb4 NOT NULL,
-                    `Url` longtext CHARACTER SET utf8mb4 NOT NULL,
-                    `Version` longtext CHARACTER SET utf8mb4 NOT NULL,
-                    `IsActive` tinyint(1) NOT NULL,
-                    `CreatedAt` datetime(6) NOT NULL,
-                    `UpdatedAt` datetime(6) NULL,
-                    PRIMARY KEY (`Id`)
-                ) CHARACTER SET utf8mb4;
-            ");
-            logger.LogInformation("tools表创建成功");
-
-            logger.LogInformation("所有缺失的表已创建完成");
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "创建表时出错");
-            throw;
         }
     }
 }
