@@ -1,9 +1,11 @@
 ﻿// Copyright (c) DGP Studio. All rights reserved.
 // Licensed under the MIT license.
 
+using Microsoft.EntityFrameworkCore;
 using Snap.Hutao.Server.Controller.Filter;
 using Snap.Hutao.Server.Job;
 using Snap.Hutao.Server.Model.Context;
+using Snap.Hutao.Server.Model.Entity.Announcement;
 using Snap.Hutao.Server.Model.Entity.Passport;
 using Snap.Hutao.Server.Model.Redeem;
 using Snap.Hutao.Server.Model.Response;
@@ -100,5 +102,111 @@ public class ServiceController : ControllerBase
 
         RedeemGenerateResponse response = await redeemService.GenerateRedeemCodesAsync(req).ConfigureAwait(false);
         return Response<RedeemGenerateResponse>.Success("生成成功", response);
+    }
+
+    [HttpGet("Announcement/{id}")]
+    public async Task<IActionResult> GetAnnouncementAsync(long id)
+    {
+        var announcement = await appDbContext.Announcements
+            .FirstOrDefaultAsync(a => a.Id == id)
+            .ConfigureAwait(false);
+
+        if (announcement == null)
+        {
+            return Model.Response.Response.Fail(ReturnCode.InvalidRequestBody, "公告不存在");
+        }
+
+        return Response<EntityAnnouncement>.Success("获取公告成功", announcement);
+    }
+
+    [HttpPut("Announcement/{id}")]
+    public async Task<IActionResult> UpdateAnnouncementAsync(long id, [FromBody] HutaoUploadAnnouncement request)
+    {
+        var announcement = await appDbContext.Announcements
+            .FirstOrDefaultAsync(a => a.Id == id)
+            .ConfigureAwait(false);
+
+        if (announcement == null)
+        {
+            return Model.Response.Response.Fail(ReturnCode.InvalidRequestBody, "公告不存在");
+        }
+
+        // 更新字段
+        if (!string.IsNullOrEmpty(request.Title))
+        {
+            announcement.Title = request.Title;
+        }
+        if (!string.IsNullOrEmpty(request.Content))
+        {
+            announcement.Content = request.Content;
+        }
+        // Severity是枚举，直接赋值
+        announcement.Severity = request.Severity;
+        if (!string.IsNullOrEmpty(request.Link))
+        {
+            announcement.Link = request.Link;
+        }
+        // 注意：HutaoUploadAnnouncement没有Locale属性，但EntityAnnouncement有Locale
+        // 这里保持原有的Locale不变
+        if (!string.IsNullOrEmpty(request.MaxPresentVersion))
+        {
+            announcement.MaxPresentVersion = request.MaxPresentVersion;
+        }
+
+        announcement.LastUpdateTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+
+        appDbContext.Announcements.Update(announcement);
+        await appDbContext.SaveChangesAsync().ConfigureAwait(false);
+
+        return Model.Response.Response.Success("公告更新成功");
+    }
+
+    [HttpDelete("Announcement/{id}")]
+    public async Task<IActionResult> DeleteAnnouncementAsync(long id)
+    {
+        var announcement = await appDbContext.Announcements
+            .FirstOrDefaultAsync(a => a.Id == id)
+            .ConfigureAwait(false);
+
+        if (announcement == null)
+        {
+            return Model.Response.Response.Fail(ReturnCode.InvalidRequestBody, "公告不存在");
+        }
+
+        appDbContext.Announcements.Remove(announcement);
+        await appDbContext.SaveChangesAsync().ConfigureAwait(false);
+
+        return Model.Response.Response.Success("公告删除成功");
+    }
+
+    [HttpGet("Users")]
+    public async Task<IActionResult> GetUsersAsync([FromQuery] string? q = "")
+    {
+        IQueryable<HutaoUser> query = appDbContext.Users;
+
+        if (!string.IsNullOrEmpty(q))
+        {
+            query = query.Where(u => 
+                u.UserName.Contains(q) || 
+                u.NormalizedUserName.Contains(q.ToUpperInvariant()) ||
+                u.Email.Contains(q));
+        }
+
+        var users = await query
+            .Select(u => new
+            {
+                u.Id,
+                u.UserName,
+                u.NormalizedUserName,
+                u.Email,
+                u.IsLicensedDeveloper,
+                u.IsMaintainer,
+                u.GachaLogExpireAt,
+                u.CdnExpireAt,
+            })
+            .ToListAsync()
+            .ConfigureAwait(false);
+
+        return Response<List<object>>.Success("获取用户列表成功", users.Cast<object>().ToList());
     }
 }

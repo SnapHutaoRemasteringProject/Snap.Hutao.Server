@@ -92,6 +92,12 @@ public sealed class AppDbContext : IdentityDbContext<HutaoUser, IdentityRole<int
     public DbSet<OAuthBindIdentity> OAuthBindIdentities { get; set; } = default!;
     #endregion
 
+    #region Misc
+    public DbSet<GitRepository> GitRepositories { get; set; } = default!;
+
+    public DbSet<Tool> Tools { get; set; } = default!;
+    #endregion
+
     /// <inheritdoc/>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
