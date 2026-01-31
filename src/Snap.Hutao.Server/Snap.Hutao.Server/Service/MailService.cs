@@ -322,12 +322,12 @@ public sealed class MailService
                 ? $"""
                 <p>申请通行证：<span class="mail-hint">{userName}</span></p>
                 <p>维护网站：<a href="{url}">{url}</a></p>
-                <a href="https://homa.snapgenshin.com/Accession/ApproveOpenSourceLicense?userName={userName}&code={code}">批准</a>
+                <a href="https://homa.snaphutaorp.org/Accession/ApproveOpenSourceLicense?userName={userName}&code={code}">批准</a>
                 """
                 : $"""
                 <p>Application passport: <span class="mail-hint">{userName}</span></p>
                 <p>Maintenance website: <a href="{url}">{url}</a></p>
-                <a href="https://homa.snapgenshin.com/Accession/ApproveOpenSourceLicense?userName={userName}&code={code}">Approve</a>
+                <a href="https://homa.snaphutaorp.org/Accession/ApproveOpenSourceLicense?userName={userName}&code={code}">Approve</a>
                 """,
             Footer = language == "CHS"
                 ? "该邮件由 DGP Studio 系统自动生成，请勿回复"

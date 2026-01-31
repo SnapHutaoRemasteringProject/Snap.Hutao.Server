@@ -91,7 +91,7 @@ public class WebApiController : ControllerBase
         };
 
         var token = new JwtSecurityToken(
-            issuer: configuration["Jwt:Issuer"] ?? "homa.snapgenshin.com",
+            issuer: configuration["Jwt:Issuer"] ?? "homa.snaphutaorp.org",
             audience: configuration["Jwt:Audience"] ?? "web_api",
             claims: claims,
             expires: DateTime.UtcNow.AddHours(24),

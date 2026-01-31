@@ -4,12 +4,13 @@
 using Disqord;
 using Disqord.Bot.Commands.Application;
 using Qmmands;
+using Snap.Hutao.Server.Discord;
 using Snap.Hutao.Server.Service.Expire;
 using Snap.Hutao.Server.Service.GachaLog.Statistics;
 using Snap.Hutao.Server.Service.Legacy;
 using Snap.Hutao.Server.Service.RoleCombat;
 
-namespace Snap.Hutao.Server.Discord;
+namespace Snap.Hutao.Server;
 
 public sealed class HutaoServerCommands : DiscordApplicationModuleBase
 {

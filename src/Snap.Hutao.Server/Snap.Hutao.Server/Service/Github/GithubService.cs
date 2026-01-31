@@ -26,7 +26,7 @@ public class GithubService : IOAuthProvider
     {
         githubApiService = serviceProvider.GetRequiredService<GithubApiService>();
         passportService = serviceProvider.GetRequiredService<PassportService>();
-        discordService = serviceProvider.GetRequiredService<DiscordService>();
+        //discordService = serviceProvider.GetRequiredService<DiscordService>();
         githubOptions = serviceProvider.GetRequiredService<AppOptions>().Github;
         appDbContext = serviceProvider.GetRequiredService<AppDbContext>();
     }
@@ -133,7 +133,7 @@ public class GithubService : IOAuthProvider
             Event = GithubWebhookEvent.WorkflowRun,
         };
 
-        await discordService.ReportGithubWebhookAsync(githubMessage);
+        //await discordService.ReportGithubWebhookAsync(githubMessage);
     }
 
     public async ValueTask ProcessReleaseEventAsync(Release release)
@@ -158,6 +158,6 @@ public class GithubService : IOAuthProvider
             Event = GithubWebhookEvent.Release,
         };
 
-        await discordService.ReportGithubWebhookAsync(githubMessage);
+        //await discordService.ReportGithubWebhookAsync(githubMessage);
     }
 }

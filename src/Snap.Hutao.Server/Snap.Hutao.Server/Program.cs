@@ -123,7 +123,7 @@ public static class Program
             .AddScoped<RedeemService>()
             .AddSingleton<AfdianWebhookService>()
             .AddSingleton<CdnExpireService>()
-            .AddSingleton<DiscordService>()
+            //.AddSingleton<DiscordService>()
             .AddSingleton<GachaLogExpireService>()
             .AddSingleton<IAuthorizationMiddlewareResultHandler, ResponseAuthorizationMiddlewareResultHandler>()
             .AddSingleton<IRankService, RankService>()
@@ -192,7 +192,7 @@ public static class Program
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = appOptions.GetJwtSecurityKey(),
                     ValidateIssuer = true,
-                    ValidIssuer = "homa.snapgenshin.com",
+                    ValidIssuer = "homa.snaphutaorp.org",
                     ValidateAudience = false,
                     RequireExpirationTime = true,
                     ValidateLifetime = true,
@@ -233,12 +233,12 @@ public static class Program
                 jsonOptions.WriteIndented = true;
             });
 
-        appBuilder.Host.ConfigureDiscordBot<HutaoServerBot>((hostContext, botContext) =>
-        {
-            botContext.OwnerIds = appOptions.Discord.OwnerIds.Select(id => (Snowflake)id);
-            botContext.Intents = GatewayIntents.LibraryRecommended | GatewayIntents.DirectMessages;
-            botContext.Token = appOptions.Discord.Token;
-        });
+        //appBuilder.Host.ConfigureDiscordBot<HutaoServerBot>((hostContext, botContext) =>
+        //{
+        //    botContext.OwnerIds = appOptions.Discord.OwnerIds.Select(id => (Snowflake)id);
+        //    botContext.Intents = GatewayIntents.LibraryRecommended | GatewayIntents.DirectMessages;
+        //    botContext.Token = appOptions.Discord.Token;
+        //});
 
         WebApplication app = appBuilder.Build();
         MigrateDatabase(app);

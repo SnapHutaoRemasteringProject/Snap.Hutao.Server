@@ -39,7 +39,7 @@ public sealed class GachaLogStatisticsService
     {
         appDbContext = serviceProvider.GetRequiredService<AppDbContext>();
         metadataDbContext = serviceProvider.GetRequiredService<MetadataDbContext>();
-        discordService = serviceProvider.GetRequiredService<DiscordService>();
+       // discordService = serviceProvider.GetRequiredService<DiscordService>();
         memoryCache = serviceProvider.GetRequiredService<IMemoryCache>();
     }
 
@@ -66,7 +66,7 @@ public sealed class GachaLogStatisticsService
 
             await Task.Run(() => RunCore(tracker)).ConfigureAwait(false);
             GachaEventStatistics statistics = tracker.CompleteTracking(appDbContext, memoryCache);
-            await discordService.ReportGachaEventStatisticsAsync(statistics).ConfigureAwait(false);
+            //await discordService.ReportGachaEventStatisticsAsync(statistics).ConfigureAwait(false);
         }
         finally
         {
