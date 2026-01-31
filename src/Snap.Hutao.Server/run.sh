@@ -2,8 +2,8 @@
 
 imageName=snapserverimg
 containerName=snapserver
-http_port=7076
-https_port=7443
+http_port=5076
+https_port=7076
 version=1.2
 
 oldContainer=`docker ps -a| grep ${containerName} | head -1|awk '{print $1}' `
