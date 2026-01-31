@@ -19,4 +19,6 @@ RUN dotnet publish "Snap.Hutao.Server.csproj" -c Release -o /app/publish /p:UseA
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+
+ENV ASPNETCORE_URLS=http://+:80
 ENTRYPOINT ["dotnet", "Snap.Hutao.Server.dll"]

@@ -7,6 +7,9 @@ services:
       dockerfile: Dockerfile
       target: final
     image: homa-server:latest
+    ports:
+      - "7076:80"
+      - "7443:443"
     extra_hosts:
       - "host.docker.internal:172.27.0.1"
       - "host.docker.gateway:host-gateway"
