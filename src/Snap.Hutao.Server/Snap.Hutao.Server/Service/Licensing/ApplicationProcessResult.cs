@@ -6,7 +6,6 @@ namespace Snap.Hutao.Server.Service.Licensing;
 public enum ApplicationProcessResult
 {
     Ok,
-    ReCaptchaVerificationFailed,
     UsetNotExists,
     AlreadyApplied,
 }

@@ -56,7 +56,6 @@
     </footer>
 
     <script src="https://cdn.staticfile.org/bootstrap/5.2.3/js/bootstrap.bundle.min.js"></script>
-    <script src="https://www.google.com/recaptcha/api.js?render=6Lc_TgomAAAAACMxQNidmC9G1dg9JbMN4b8r788A"></script>
     <script src="https://cdn.staticfile.org/jquery/3.7.0/jquery.min.js"></script>
     <script>
         $('#redeemButton').on('click', function (event) {
@@ -67,32 +66,25 @@
                 return;
             }
 
-            grecaptcha.ready(function () {
-                $('#redeemButton').prop('disabled', true);
-                grecaptcha
-                    .execute('6Lc_TgomAAAAACMxQNidmC9G1dg9JbMN4b8r788A', { action: 'ApplyOpenSourceLicense' })
-                    .then(function (token) {
-                        $.ajax({
-                            url: '/Redeem/Use',
-                            type: 'POST',
-                            data: JSON.stringify({
-                                'username': userName,
-                                'code': redeemCode,
-                                'Token': token,
-                            }),
-                            dataType: 'json',
-                            contentType: 'application/json',
-                            success: function (resp) {
-                                alert(resp.message);
-                                $('#codeInput').val('');
-                                $('#redeemButton').prop('disabled', false);
-                            },
-                            error: function (resp) {
-                                alert(resp.message);
-                                $('#redeemButton').prop('disabled', false);
-                            }
-                        });
-                    });
+            $('#redeemButton').prop('disabled', true);
+            $.ajax({
+                url: '/Redeem/Use',
+                type: 'POST',
+                data: JSON.stringify({
+                    'username': userName,
+                    'code': redeemCode,
+                }),
+                dataType: 'json',
+                contentType: 'application/json',
+                success: function (resp) {
+                    alert(resp.message);
+                    $('#codeInput').val('');
+                    $('#redeemButton').prop('disabled', false);
+                },
+                error: function (resp) {
+                    alert(resp.message);
+                    $('#redeemButton').prop('disabled', false);
+                }
             });
         })
     </script>

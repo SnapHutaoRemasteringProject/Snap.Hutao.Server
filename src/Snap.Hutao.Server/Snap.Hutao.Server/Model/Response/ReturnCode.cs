@@ -40,7 +40,6 @@ public enum ReturnCode
     NoUserIdentity = 514008,
     InvalidUserName = 514009,
     TooShortPassword = 514010,
-    ReCaptchaVerifyFailed = 515001,
     ServiceKeyInvalid = 516001,
     UserNameNotExists = 516002,
     RedeemCodeInvalid = 518001,

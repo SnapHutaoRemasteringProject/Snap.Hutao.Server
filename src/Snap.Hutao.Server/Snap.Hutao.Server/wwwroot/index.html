@@ -56,7 +56,6 @@
     </footer>
 
     <script src="https://cdn.staticfile.org/bootstrap/5.2.3/js/bootstrap.bundle.min.js"></script>
-    <script src="https://www.google.com/recaptcha/api.js?render=6Lc_TgomAAAAACMxQNidmC9G1dg9JbMN4b8r788A"></script>
     <script src="https://cdn.staticfile.org/jquery/3.7.0/jquery.min.js"></script>
     <script>
         $('#openSourceDevLicenseButton').on('click', function (event) {
@@ -67,27 +66,20 @@
                 return;
             }
 
-            grecaptcha.ready(function () {
-                $('#openSourceDevLicenseButton').prop('disabled', true);
-                grecaptcha
-                    .execute('6Lc_TgomAAAAACMxQNidmC9G1dg9JbMN4b8r788A', { action: 'ApplyOpenSourceLicense' })
-                    .then(function (token) {
-                        $.ajax({
-                            url: '/Accession/ApplyOpenSourceLicense',
-                            type: 'POST',
-                            data: JSON.stringify({
-                                'UserName': userName,
-                                'ProjectUrl': projectUrl,
-                                'Token': token,
-                            }),
-                            dataType: 'json',
-                            contentType: 'application/json',
-                            success: function (resp) {
-                                alert(resp.message);
-                                $('#openSourceDevLicenseButton').prop('disabled', false);
-                            }
-                        });
-                    });
+            $('#openSourceDevLicenseButton').prop('disabled', true);
+            $.ajax({
+                url: '/Accession/ApplyOpenSourceLicense',
+                type: 'POST',
+                data: JSON.stringify({
+                    'UserName': userName,
+                    'ProjectUrl': projectUrl,
+                }),
+                dataType: 'json',
+                contentType: 'application/json',
+                success: function (resp) {
+                    alert(resp.message);
+                    $('#openSourceDevLicenseButton').prop('disabled', false);
+                }
             });
         })
     </script>

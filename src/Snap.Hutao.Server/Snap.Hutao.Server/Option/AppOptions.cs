@@ -9,8 +9,6 @@ public sealed class AppOptions
 
     public string MailerSecret { get; set; } = default!;
 
-    public string ReCaptchaKey { get; set; } = default!;
-
     public string RedisAddress { get; set; } = default!;
 
     public string RSAPrivateKey { get; set; } = default!;

@@ -32,7 +32,6 @@ using Snap.Hutao.Server.Service.Legacy.PizzaHelper;
 using Snap.Hutao.Server.Service.Licensing;
 using Snap.Hutao.Server.Service.OAuth;
 using Snap.Hutao.Server.Service.Ranking;
-using Snap.Hutao.Server.Service.ReCaptcha;
 using Snap.Hutao.Server.Service.Redeem;
 using Snap.Hutao.Server.Service.RoleCombat;
 using Snap.Hutao.Server.Service.Sentry;
@@ -175,7 +174,6 @@ public static class Program
             .AddTransient<GithubApiService>()
             .AddTransient<LegacyStatisticsRefreshJob>()
             .AddTransient<StatisticsService>()
-            .AddTransient<ReCaptchaService>()
             .AddTransient<RoleCombatRecordCleanJob>()
             .AddTransient<RoleCombatService>()
             .AddTransient<RoleCombatStatisticsRefreshJob>()
