@@ -495,7 +495,7 @@ public sealed class MailService
             Subject = options.Subject,
             From =
             {
-                new MailboxAddress("DGP Studio", smtpOptions.UserName),
+                new MailboxAddress("Homa", smtpOptions.UserName),
             },
             To =
             {
@@ -510,7 +510,7 @@ public sealed class MailService
         using (SmtpClient client = new())
         {
             client.ServerCertificateValidationCallback = (s, c, h, e) => true;
-            await client.ConnectAsync(smtpOptions.Server).ConfigureAwait(false);
+            await client.ConnectAsync(smtpOptions.Server, 587, MailKit.Security.SecureSocketOptions.StartTls).ConfigureAwait(false);
             await client.AuthenticateAsync(smtpOptions.UserName, smtpOptions.Password).ConfigureAwait(false);
             await client.SendAsync(mimeMessage).ConfigureAwait(false);
             await client.DisconnectAsync(true).ConfigureAwait(false);
