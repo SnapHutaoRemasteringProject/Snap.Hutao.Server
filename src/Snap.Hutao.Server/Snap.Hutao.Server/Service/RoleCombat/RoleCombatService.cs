@@ -21,13 +21,13 @@ public sealed class RoleCombatService
     private static readonly Func<AppDbContext, long, IEnumerable<RoleCombatAvatar>> AvatarsQuery = EF.CompileQuery((AppDbContext context, long recordId) =>
         context.RoleCombatAvatars.AsNoTracking().Where(g => g.RecordId == recordId).AsQueryable());
 
-    private readonly DiscordService discordService;
+    //private readonly DiscordService discordService;
     private readonly AppDbContext appDbContext;
     private readonly IMemoryCache memoryCache;
 
     public RoleCombatService(IServiceProvider serviceProvider)
     {
-        discordService = serviceProvider.GetRequiredService<DiscordService>();
+        //discordService = serviceProvider.GetRequiredService<DiscordService>();
         appDbContext = serviceProvider.GetRequiredService<AppDbContext>();
         memoryCache = serviceProvider.GetRequiredService<IMemoryCache>();
     }
@@ -70,7 +70,7 @@ public sealed class RoleCombatService
 
             await appDbContext.SaveChangesAsync().ConfigureAwait(false);
 
-            await discordService.ReportRoleCombatStatisticsAsync(item).ConfigureAwait(false);
+            //await discordService.ReportRoleCombatStatisticsAsync(item).ConfigureAwait(false);
         }
         finally
         {

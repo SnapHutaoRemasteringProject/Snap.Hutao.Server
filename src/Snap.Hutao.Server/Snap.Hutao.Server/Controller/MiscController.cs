@@ -35,10 +35,16 @@ public class MiscController : ControllerBase
     }
 
     [HttpGet("git-repository/all")]
-    public async Task<IActionResult> GetAllGitRepositories()
+    public async Task<IActionResult> GetAllGitRepositories([FromQuery] string? name = null)
     {
-        // 从数据库获取Git仓库列表
-        var gitRepositories = await appDbContext.GitRepositories
+        IQueryable<GitRepository> query = appDbContext.GitRepositories;
+
+        if (!string.IsNullOrEmpty(name))
+        {
+            query = query.Where(r => r.Name.Contains(name));
+        }
+
+        var gitRepositories = await query
             .ToListAsync()
             .ConfigureAwait(false);
 
