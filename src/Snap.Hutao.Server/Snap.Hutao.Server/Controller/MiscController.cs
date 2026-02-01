@@ -54,8 +54,9 @@ public class MiscController : ControllerBase
     [HttpGet("static/raw/{category}/{fileName}")]
     public IActionResult GetImage(string category, string fileName)
     {
-        // 获取图片资源，弃用，请使用额外的文件服务器
-        return Model.Response.Response.Fail(ReturnCode.InvalidRequestBody, "Image not found");
+        // 获取图片资源 重定向到wangdage12的服务器
+        string baseUrl = "https://htserver.wdg.cloudns.ch/static/raw";
+        return Redirect($"{baseUrl}/{category}/{fileName}");
     }
 
     [HttpGet("mgnt/am-i-banned")]
