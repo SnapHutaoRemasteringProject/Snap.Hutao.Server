@@ -7,11 +7,15 @@ public class Response
 {
     public Response(ReturnCode code, string message)
     {
+        RetCode = code;
         Code = code;
         Message = message;
     }
 
     [JsonPropertyName("retcode")]
+    public ReturnCode RetCode { get; set; }
+
+    [JsonPropertyName("code")]
     public ReturnCode Code { get; set; }
 
     [JsonPropertyName("message")]

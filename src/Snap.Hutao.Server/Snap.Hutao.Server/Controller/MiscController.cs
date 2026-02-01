@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Snap.Hutao.Server.Model.Context;
 using Snap.Hutao.Server.Model.Entity;
 using Snap.Hutao.Server.Model.Response;
+using System.Net;
 
 namespace Snap.Hutao.Server.Controller;
 
@@ -38,17 +39,10 @@ public class MiscController : ControllerBase
     {
         // 从数据库获取Git仓库列表
         var gitRepositories = await appDbContext.GitRepositories
-            .Select(r => new
-            {
-                r.Name,
-                r.HttpsUrl,
-                r.WebUrl,
-                r.Type
-            })
             .ToListAsync()
             .ConfigureAwait(false);
 
-        return Response<List<object>>.Success("OK", gitRepositories.Cast<object>().ToList());
+        return Response<List<GitRepository>>.Success("OK", gitRepositories);
     }
 
     [HttpGet("static/raw/{category}/{fileName}")]
@@ -83,5 +77,52 @@ public class MiscController : ControllerBase
             .ConfigureAwait(false);
 
         return Response<List<object>>.Success("OK", tools.Cast<object>().ToList());
+    }
+
+    [HttpGet("ip")]
+    public IActionResult GetIpInformation()
+    {
+        string? ipAddress = null;
+
+        if (HttpContext.Request.Headers.TryGetValue("X-Forwarded-For", out var xForwardedFor))
+        {
+            ipAddress = xForwardedFor.ToString().Split(',', StringSplitOptions.RemoveEmptyEntries)
+                .FirstOrDefault()?.Trim();
+        }
+
+        if (string.IsNullOrEmpty(ipAddress))
+        {
+            ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
+        }
+
+        ipAddress ??= "Unknown";
+
+        var division = "Unknown";
+
+        var ipInfo = new IPInformation
+        {
+            Ip = ipAddress,
+            Division = division,
+        };
+
+        return Response<IPInformation>.Success("OK", ipInfo);
+    }
+
+    [HttpGet("ips")]
+    public string GetIpString()
+    {
+        string? ipAddress = null;
+        if (HttpContext.Request.Headers.TryGetValue("X-Forwarded-For", out var xForwardedFor))
+        {
+            ipAddress = xForwardedFor.ToString().Split(',', StringSplitOptions.RemoveEmptyEntries)
+                .FirstOrDefault()?.Trim();
+        }
+
+        if (string.IsNullOrEmpty(ipAddress))
+        {
+            ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
+        }
+
+        return ipAddress ?? "Unknown";
     }
 }
