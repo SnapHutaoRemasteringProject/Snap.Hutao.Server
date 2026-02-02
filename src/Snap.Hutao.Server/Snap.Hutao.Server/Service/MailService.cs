@@ -28,12 +28,12 @@ public sealed class MailService
         MailOptions options = new()
         {
             Subject = language == "CHS"
-                ? "Snap Hutao 通行证安全"
-                : "Snap Hutao Passport Security",
+                ? "Snap Hutao Remastered 通行证安全"
+                : "Snap Hutao Remastered Passport Security",
             Address = emailAddress,
             Title = language == "CHS"
-                ? "感谢您注册 Snap Hutao 通行证"
-                : "Thank you for registering Snap Hutao Passport",
+                ? "感谢您注册 Snap Hutao Remastered 通行证"
+                : "Thank you for registering Snap Hutao Remastered Passport",
             RawContent = language == "CHS"
                 ? $"""
                 <p>以下是您注册通行证所需的验证码：</p>
@@ -48,8 +48,8 @@ public sealed class MailService
                 <p>If you are not trying to register an passport, please ignore this email, nothing will happen.</p>
                 """,
             Footer = language == "CHS"
-                ? "该邮件由 DGP Studio 系统自动生成，请勿回复"
-                : "This email is automatically sent by the DGP Studio system, please do not reply",
+                ? "该邮件由 SnapHutaoRemasteringProject 系统自动生成，请勿回复"
+                : "This email is automatically sent by the SnapHutaoRemasteringProject system, please do not reply",
         };
 
         return SendMailAsync(options);
@@ -61,12 +61,12 @@ public sealed class MailService
         MailOptions options = new()
         {
             Subject = language == "CHS"
-                ? "Snap Hutao 通行证安全"
-                : "Snap Hutao Passport Security",
+                ? "Snap Hutao Remastered 通行证安全"
+                : "Snap Hutao Remastered Passport Security",
             Address = emailAddress,
             Title = language == "CHS"
-                ? "您正在修改 Snap Hutao 通行证密码"
-                : "You are changing your Snap Hutao passport password",
+                ? "您正在修改 Snap Hutao Remastered 通行证密码"
+                : "You are changing your Snap Hutao Remastered passport password",
             RawContent = language == "CHS"
                 ? $"""
                 <p>以下是您修改密码所需的验证码：</p>
@@ -81,8 +81,8 @@ public sealed class MailService
                 <p>If you are not trying to reset your password, please ignore this email, nothing will happen.</p>
                 """,
             Footer = language == "CHS"
-                ? "该邮件由 DGP Studio 系统自动生成，请勿回复"
-                : "This email is automatically sent by the DGP Studio system, please do not reply",
+                ? "该邮件由 SnapHutaoRemasteringProject 系统自动生成，请勿回复"
+                : "This email is automatically sent by the SnapHutaoRemasteringProject system, please do not reply",
         };
 
         return SendMailAsync(options);
@@ -94,12 +94,12 @@ public sealed class MailService
         MailOptions options = new()
         {
             Subject = language == "CHS"
-                ? "Snap Hutao 通行证安全"
-                : "Snap Hutao Passport Security",
+                ? "Snap Hutao Remastered 通行证安全"
+                : "Snap Hutao Remastered Passport Security",
             Address = emailAddress,
             Title = language == "CHS"
-                ? "您正在修改 Snap Hutao 通行证邮箱"
-                : "You are changing your Snap Hutao passport email",
+                ? "您正在修改 Snap Hutao Remastered 通行证邮箱"
+                : "You are changing your Snap Hutao Remastered passport email",
             RawContent = language == "CHS"
                 ? $"""
                 <p>以下是您修改邮箱所需的验证码：</p>
@@ -114,8 +114,8 @@ public sealed class MailService
                 <p>If you are not trying to change your email, please ignore this emai, nothing will happen.</p>
                 """,
             Footer = language == "CHS"
-                ? "该邮件由 DGP Studio 系统自动生成，请勿回复"
-                : "This email is automatically sent by the DGP Studio system, please do not reply",
+                ? "该邮件由 SnapHutaoRemasteringProject 系统自动生成，请勿回复"
+                : "This email is automatically sent by the SnapHutaoRemasteringProject system, please do not reply",
         };
 
         return SendMailAsync(options);
@@ -127,8 +127,8 @@ public sealed class MailService
         MailOptions options = new()
         {
             Subject = language == "CHS"
-                ? "Snap Hutao 通行证安全"
-                : "Snap Hutao Passport Security",
+                ? "Snap Hutao Remastered 通行证安全"
+                : "Snap Hutao Remastered Passport Security",
             Address = emailAddress,
             Title = language == "CHS"
                 ? "您正在注销 Snap Hutao 通行证"
@@ -149,8 +149,8 @@ public sealed class MailService
                 <p>If you are not trying to delete your passport, please ignore this email, nothing will happen.</p>
                 """,
             Footer = language == "CHS"
-                ? "该邮件由 DGP Studio 系统自动生成，请勿回复"
-                : "This email is automatically sent by the DGP Studio system, please do not reply",
+                ? "该邮件由 SnapHutaoRemasteringProject 系统自动生成，请勿回复"
+                : "This email is automatically sent by the SnapHutaoRemasteringProject system, please do not reply",
         };
 
         return SendMailAsync(options);
@@ -180,8 +180,8 @@ public sealed class MailService
                 <p>Please keep this email safe, order number: <span class="mail-hint">{tradeNumber}</span></p>
                 """,
             Footer = language == "CHS"
-                ? "该邮件由 DGP Studio 系统自动生成，请勿回复"
-                : "This email is automatically sent by the DGP Studio system, please do not reply",
+                ? "该邮件由 SnapHutaoRemasteringProject 系统自动生成，请勿回复"
+                : "This email is automatically sent by the SnapHutaoRemasteringProject system, please do not reply",
         };
 
         return SendMailAsync(options);
@@ -194,10 +194,10 @@ public sealed class MailService
         {
             Subject = language == "CHS"
                 ? "胡桃云服务"
-                : "Snap Hutao Cloud Service",
+                : "Snap Hutao Remastered Cloud Service",
             Address = emailAddress,
             Title = language == "CHS"
-                ? "感谢您赞助 Snap Hutao 祈愿记录上传服务"
+                ? "感谢您赞助 Snap Hutao Remastered 祈愿记录上传服务"
                 : "Thank you for sponsor Snap Hutao Wish Record Backup Service",
             RawContent = language == "CHS"
                 ? $"""
@@ -213,8 +213,8 @@ public sealed class MailService
                 <p>Please keep this email safe, order number: <span class="mail-hint">{tradeNumber}</span></p>
                 """,
             Footer = language == "CHS"
-                ? "该邮件由 DGP Studio 系统自动生成，请勿回复"
-                : "This email is automatically sent by the DGP Studio system, please do not reply",
+                ? "该邮件由 SnapHutaoRemasteringProject 系统自动生成，请勿回复"
+                : "This email is automatically sent by the SnapHutaoRemasteringProject system, please do not reply",
         };
 
         return SendMailAsync(options);
@@ -227,10 +227,10 @@ public sealed class MailService
         {
             Subject = language == "CHS"
                 ? "胡桃云服务"
-                : "Snap Hutao Cloud Service",
+                : "Snap Hutao Remastered Cloud Service",
             Address = emailAddress,
             Title = language == "CHS"
-                ? "感谢您赞助 Snap Hutao 胡桃云 CDN 更新加速服务"
+                ? "感谢您赞助 Snap Hutao Remastered 胡桃云 CDN 更新加速服务"
                 : "Thank you for sponsor Snap Hutao Cloud CDN Update Acceleration Service",
             RawContent = language == "CHS"
                 ? $"""
@@ -244,8 +244,8 @@ public sealed class MailService
                 <p>Please keep this email safe, order number: <span class="mail-hint">{tradeNumber}</span></p>
                 """,
             Footer = language == "CHS"
-                ? "该邮件由 DGP Studio 系统自动生成，请勿回复"
-                : "This email is automatically sent by the DGP Studio system, please do not reply",
+                ? "该邮件由 SnapHutaoRemasteringProject 系统自动生成，请勿回复"
+                : "This email is automatically sent by the SnapHutaoRemasteringProject system, please do not reply",
         };
 
         return SendMailAsync(options);
@@ -258,10 +258,10 @@ public sealed class MailService
         {
             Subject = language == "CHS"
                 ? "胡桃云服务"
-                : "Snap Hutao Cloud Service",
+                : "Snap Hutao Remastered Cloud Service",
             Address = emailAddress,
             Title = language == "CHS"
-                ? "感谢您赞助 Snap Hutao 胡桃云 CDN 更新加速服务"
+                ? "感谢您赞助 Snap Hutao Remastered 胡桃云 CDN 更新加速服务"
                 : "Thank you for sponsor Snap Hutao Cloud CDN Update Acceleration Service",
             RawContent = language == "CHS"
                 ? $"""
@@ -290,11 +290,11 @@ public sealed class MailService
         {
             Subject = language == "CHS"
                 ? "胡桃开放平台"
-                : "Snap Hutao Open Platform",
+                : "Snap Hutao Remastered Open Platform",
             Address = emailAddress,
             Title = language == "CHS"
                 ? "胡桃开放平台开发者申请"
-                : "Snap Hutao Open Platform Developer Application",
+                : "Snap Hutao Remastered Open Platform Developer Application",
             RawContent = language == "CHS"
                 ? $"""<span class="mail-hint">{emailAddress}</span>，你的开发者许可申请已经通过"""
                 : $"""<span class="mail-hint">{emailAddress}</span>, your developer license application has been approved""",
@@ -313,11 +313,11 @@ public sealed class MailService
             Subject =
                 language == "CHS"
                 ? "胡桃开放平台"
-                : "Hutao Open Platform",
+                : "Hutao Remastered Open Platform",
             Address = smtpOptions.DiagnosticEmailAddress,
             Title = language == "CHS"
                 ? "胡桃开放平台开发者申请"
-                : "Snap Hutao Open Platform Developer Application",
+                : "Snap Hutao Remastered Open Platform Developer Application",
             RawContent = language == "CHS"
                 ? $"""
                 <p>申请通行证：<span class="mail-hint">{userName}</span></p>
@@ -330,8 +330,8 @@ public sealed class MailService
                 <a href="https://homa.snaphutaorp.org/Accession/ApproveOpenSourceLicense?userName={userName}&code={code}">Approve</a>
                 """,
             Footer = language == "CHS"
-                ? "该邮件由 DGP Studio 系统自动生成，请勿回复"
-                : "This email is automatically sent by the DGP Studio system, please do not reply",
+                ? "该邮件由 SnapHutaoRemasteringProject 系统自动生成，请勿回复"
+                : "This email is automatically sent by the SnapHutaoRemasteringProject system, please do not reply",
         };
 
         return SendMailAsync(options);
@@ -345,7 +345,7 @@ public sealed class MailService
             <head>
                 <meta charset="utf-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>DGP Studio Mail Template</title>
+                <title>SnapHutaoRemasteringProject Mail Template</title>
                 <style>
                     #mail-table {
                         margin: auto;
@@ -450,15 +450,15 @@ public sealed class MailService
             <body>
             <div id="mail-table">
                 <div id="mail-body">
-                    <img alt="DGP Studio"
-                         id="dgp-logo"
+                    <img alt="SnapHutaoRemasteringProject"
+                         id="shrp-logo"
                          src="https://img.alicdn.com/imgextra/i3/1797064093/O1CN01sjsnty1g6e14c9BwZ_!!1797064093.png">
                     <div id="mail-title">{{options.Title}}</div>
                     <div id="mail-content">{{options.RawContent}}</div>
                 </div>
                 <div id="mail-footer">
                     <span>{{options.Footer}}</span>
-                    <span>&copy; 2022-2025 <a href="https://github.com/DGP-Studio">DGP Studio</a> | <a href="https://github.com/DGP-Studio/Snap.Hutao">Snap Hutao</a> Dev Team. All rights reserved.</span>
+                    <span>&copy; 2026 <a href="https://github.com/SnapHutaoRemasteringProject">SnapHutaoRemasteringProject</a> | <a href="https://github.com/SnapHutaoRemasteringProject/Snap.Hutao.Remastered">Snap Hutao Remastered</a> Dev Team. All rights reserved.</span>
                 </div>
             </div>
             </body>
