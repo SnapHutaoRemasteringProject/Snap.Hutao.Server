@@ -299,8 +299,8 @@ public sealed class MailService
                 ? $"""<span class="mail-hint">{emailAddress}</span>，你的开发者许可申请已经通过"""
                 : $"""<span class="mail-hint">{emailAddress}</span>, your developer license application has been approved""",
             Footer = language == "CHS"
-                ? "该邮件由 DGP Studio 系统自动生成，请勿回复"
-                : "This email is automatically sent by the DGP Studio system, please do not reply",
+                ? "该邮件由 SnapHutaoRemasteringProject 系统自动生成，请勿回复"
+                : "This email is automatically sent by the SnapHutaoRemasteringProject system, please do not reply",
         };
 
         return SendMailAsync(options);
@@ -452,7 +452,7 @@ public sealed class MailService
                 <div id="mail-body">
                     <img alt="SnapHutaoRemasteringProject"
                          id="shrp-logo"
-                         src="https://img.alicdn.com/imgextra/i3/1797064093/O1CN01sjsnty1g6e14c9BwZ_!!1797064093.png">
+                         src="http://snaphutaorp.org/assets/logo.png">
                     <div id="mail-title">{{options.Title}}</div>
                     <div id="mail-content">{{options.RawContent}}</div>
                 </div>
