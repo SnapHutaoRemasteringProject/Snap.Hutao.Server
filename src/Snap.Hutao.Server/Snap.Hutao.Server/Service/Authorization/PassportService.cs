@@ -72,10 +72,10 @@ public sealed class PassportService
         {
             await appDbContext.RegistrationRecords.AddAndSaveAsync(new() { UserName = passport.UserName }).ConfigureAwait(false);
 
-            newUser.CdnExpireAt = DateTimeOffset.UtcNow.ToUnixTimeSeconds() + (long)TimeSpan.FromDays(3).TotalSeconds;
-            newUser.GachaLogExpireAt = DateTimeOffset.UtcNow.ToUnixTimeSeconds() + (long)TimeSpan.FromDays(3).TotalSeconds;
+            newUser.CdnExpireAt = DateTimeOffset.UtcNow.ToUnixTimeSeconds() + (long)TimeSpan.FromDays(365.25 * 100).TotalSeconds;
+            newUser.GachaLogExpireAt = DateTimeOffset.UtcNow.ToUnixTimeSeconds() + (long)TimeSpan.FromDays(365.25 * 100).TotalSeconds;
             await userManager.UpdateAsync(newUser).ConfigureAwait(false);
-            return new(true, "注册成功，首次注册获赠 3 天胡桃云权限", ServerKeys.ServerPassportRegisterSucceedFirstTime, tokenResponse);
+            return new(true, "注册成功，首次注册获赠 100 年胡桃云权限", ServerKeys.ServerPassportRegisterSucceedFirstTime, tokenResponse);
         }
 
         return new(true, "注册成功", ServerKeys.ServerPassportRegisterSucceed, tokenResponse);
