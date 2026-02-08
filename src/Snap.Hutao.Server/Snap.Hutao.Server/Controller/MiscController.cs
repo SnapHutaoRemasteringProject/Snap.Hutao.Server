@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Snap.Hutao.Server.Model.Context;
 using Snap.Hutao.Server.Model.Entity;
 using Snap.Hutao.Server.Model.Response;
+using Snap.Hutao.Server.Model.Static;
 using System.Net;
 
 namespace Snap.Hutao.Server.Controller;
@@ -25,11 +26,10 @@ public class MiscController : ControllerBase
     [HttpGet("patch/hutao")]
     public IActionResult GetPatchInfo()
     {
-        // 获取新版本信息
         return Response<object>.Success("OK", new
         {
             validation = "",
-            version = "1.0.0",
+            version = "1.18.0.0",
             mirrors = Array.Empty<string>(),
         });
     }
@@ -54,16 +54,34 @@ public class MiscController : ControllerBase
     [HttpGet("static/raw/{category}/{fileName}")]
     public IActionResult GetImage(string category, string fileName)
     {
-        // 获取图片资源 重定向到wangdage12的服务器
         string baseUrl = "https://htserver.wdg.cloudns.ch/static/raw";
         return Redirect($"{baseUrl}/{category}/{fileName}");
+    }
+
+    [HttpGet("static/size")]
+    public IActionResult GetSize()
+    {
+        return Response<StaticResourceSizeInformation>.Success("OK", new StaticResourceSizeInformation()
+        {
+        });
     }
 
     [HttpGet("mgnt/am-i-banned")]
     public IActionResult CheckIfBanned()
     {
-        // 检查游戏账户是否禁用注入，目前直接返回成功的响应即可
-        return Response<object>.Success("OK", new { });
+        if (HttpContext.Request.Headers.TryGetValue("x-hutao-island-identifier", out var base64UID))
+        {
+            byte[] uid = Convert.FromBase64String(base64UID.ToString());
+            string strUid = Encoding.Unicode.GetString(uid);
+            if (appDbContext.UnlockerBanned.Contains(new Model.Entity.Unlocker.UnlockerBanned() { Uid = strUid }))
+            {
+                return Response<object>.Fail(ReturnCode.BannedUid, "Invaild UID");
+            }
+
+            return Response<object>.Success("OK");
+        }
+
+        return Response<object>.Fail(ReturnCode.InvalidUploadData, "Invaild UID");
     }
 
     [HttpGet("tools")]
