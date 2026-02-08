@@ -12,6 +12,7 @@ using Snap.Hutao.Server.Model.Entity.Redeem;
 using Snap.Hutao.Server.Model.Entity.RoleCombat;
 using Snap.Hutao.Server.Model.Entity.SpiralAbyss;
 using Snap.Hutao.Server.Model.Entity.Telemetry;
+using Snap.Hutao.Server.Model.Entity.Unlocker;
 
 namespace Snap.Hutao.Server.Model.Context;
 
@@ -96,6 +97,8 @@ public sealed class AppDbContext : IdentityDbContext<HutaoUser, IdentityRole<int
     public DbSet<GitRepository> GitRepositories { get; set; } = default!;
 
     public DbSet<Tool> Tools { get; set; } = default!;
+
+    public DbSet<UnlockerBanned> UnlockerBanned { get; set; } = default!;
     #endregion
 
     /// <inheritdoc/>
