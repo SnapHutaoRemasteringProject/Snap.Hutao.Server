@@ -69,6 +69,8 @@ public class MiscController : ControllerBase
     [HttpGet("mgnt/am-i-banned")]
     public IActionResult CheckIfBanned()
     {
+
+        return Response<object>.Success("OK");
         if (HttpContext.Request.Headers.TryGetValue("x-hutao-island-identifier", out var base64UID))
         {
             byte[] uid = Convert.FromBase64String(base64UID.ToString());
