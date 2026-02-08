@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Snap.Hutao.Server.Model.Context;
 using Snap.Hutao.Server.Model.Entity;
+using Snap.Hutao.Server.Model.Entity.Unlocker;
 using Snap.Hutao.Server.Model.Response;
 using Snap.Hutao.Server.Model.Static;
 using System.Net;
@@ -69,15 +70,14 @@ public class MiscController : ControllerBase
     [HttpGet("mgnt/am-i-banned")]
     public IActionResult CheckIfBanned()
     {
-
-        return Response<object>.Success("OK");
         if (HttpContext.Request.Headers.TryGetValue("x-hutao-island-identifier", out var base64UID))
         {
             byte[] uid = Convert.FromBase64String(base64UID.ToString());
             string strUid = Encoding.Unicode.GetString(uid);
-            if (appDbContext.UnlockerBanned.Contains(new Model.Entity.Unlocker.UnlockerBanned() { Uid = strUid }))
+            List<UnlockerBanned> unlockerBanneds = appDbContext.UnlockerBanned.Where(x => x.Uid == strUid).ToList();
+            if (unlockerBanneds.Count >= 1)
             {
-                return Response<object>.Fail(ReturnCode.BannedUid, "Invaild UID");
+                return Response<object>.Fail(ReturnCode.BannedUid, unlockerBanneds.First().Reason);
             }
 
             return Response<object>.Success("OK");
