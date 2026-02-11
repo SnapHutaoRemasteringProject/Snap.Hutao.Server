@@ -30,7 +30,7 @@ public class MiscController : ControllerBase
         return Response<object>.Success("OK", new
         {
             validation = "",
-            version = "1.18.0.0",
+            version = "1.18.1.0",
             mirrors = Array.Empty<string>(),
         });
     }
