@@ -192,7 +192,7 @@ public static class Program
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = appOptions.GetJwtSecurityKey(),
                     ValidateIssuer = true,
-                    ValidIssuer = "homa.snaphutaorp.org",
+                    ValidIssuer = "homa.snap.hutaorp.org",
                     ValidateAudience = false,
                     RequireExpirationTime = true,
                     ValidateLifetime = true,

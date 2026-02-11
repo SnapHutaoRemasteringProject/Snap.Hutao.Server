@@ -8,8 +8,8 @@ namespace Snap.Hutao.Server.Discord;
 public static class Embed
 {
     public const string AfdianOrderIcon = "https://static.afdiancdn.com/static/img/logo/logo.png";
-    public const string GachaLogIcon = "https://homa.snaphutaorp.org/img/GachaLog.png";
-    public const string SpiralAbyssIcon = "https://homa.snaphutaorp.org/img/SpiralAbyss.png";
+    public const string GachaLogIcon = "https://homa.snap.hutaorp.org/img/GachaLog.png";
+    public const string SpiralAbyssIcon = "https://homa.snap.hutaorp.org/img/SpiralAbyss.png";
 
     public static LocalEmbed CreateStandardEmbed(string title)
     {
