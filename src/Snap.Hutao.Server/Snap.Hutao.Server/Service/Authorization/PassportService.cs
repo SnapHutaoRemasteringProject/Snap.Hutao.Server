@@ -269,7 +269,7 @@ public sealed class PassportService
         {
             Subject = claimsIdentity,
             Expires = DateTime.UtcNow.AddMinutes(expirationMinutes),
-            Issuer = "homa.snap.hutaorp.org",
+            Issuer = "homa.snaphutaorp.org",
             SigningCredentials = new(jwtSigningKey, SecurityAlgorithms.HmacSha256Signature),
         };
 

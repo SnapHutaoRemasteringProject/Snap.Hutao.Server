@@ -49,7 +49,7 @@ public static class Program
         appBuilder.WebHost.UseSentry(options =>
         {
             options.Release = $"{DateTimeOffset.Now:yyyy.M.d.Hm}";
-            options.Dsn = "http://7de19654a539bfdd56a798ce89e85137@host.docker.internal:9510/7";
+            options.Dsn = "https://7de19654a539bfdd56a798ce89e85137@host.docker.internal:9510/7";
             options.TracesSampleRate = 1D;
             options.SendDefaultPii = true;
         });
@@ -192,7 +192,7 @@ public static class Program
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = appOptions.GetJwtSecurityKey(),
                     ValidateIssuer = true,
-                    ValidIssuer = "homa.snap.hutaorp.org",
+                    ValidIssuer = "homa.snaphutaorp.org",
                     ValidateAudience = false,
                     RequireExpirationTime = true,
                     ValidateLifetime = true,
