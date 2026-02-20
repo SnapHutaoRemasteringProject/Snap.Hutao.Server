@@ -192,6 +192,16 @@ public sealed class MetadataRefreshService
             AddKnownItems(knownItems, displayItems);
             AddKnownItems(knownItems, weapons);
 
+            string avatars = Path.Combine(path, "Genshin", "CHS", "Avatar");
+
+            foreach (string file in Directory.GetFiles(avatars, "*.json"))
+            {
+                string avatarJsonContent = await File.ReadAllTextAsync(file, cancellationToken).ConfigureAwait(false);
+                var avatar = (JObject)JContainer.Parse(avatarJsonContent);
+                avatar["RankLevel"] = avatar["Quality"];
+                AddKnownItems(knownItems, avatar);
+            }
+
             // 4. 保存到数据库
             await using var transaction = await metadataDbContext.Database.BeginTransactionAsync(cancellationToken).ConfigureAwait(false);
 
@@ -227,14 +237,22 @@ public sealed class MetadataRefreshService
         {
             foreach (var item in array)
             {
-                if (!knownItems.Any(x => x.Id == (uint)item["Id"]!))
+                AddKnownItems(knownItems, item);
+            }
+        }
+    }
+
+    private static void AddKnownItems(List<KnownItem> knownItems, JToken? item)
+    {
+        if (item != null)
+        {
+            if (!knownItems.Any(x => x.Id == (uint)item["Id"]!))
+            {
+                knownItems.Add(new KnownItem
                 {
-                    knownItems.Add(new KnownItem
-                    {
-                        Id = (uint)item["Id"]!,
-                        Quality = (uint)item["RankLevel"]!,
-                    });
-                }
+                    Id = (uint)item["Id"]!,
+                    Quality = (uint)item["RankLevel"]!,
+                });
             }
         }
     }

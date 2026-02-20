@@ -339,9 +339,6 @@ public static class Program
                             logger.LogInformation("数据库创建完成");
                         }
                     }
-
-                    // 确保有Snap.Metadata仓库记录
-                    EnsureSnapMetadataRepository(context, logger);
                 }
                 catch (Exception ex)
                 {
@@ -351,9 +348,6 @@ public static class Program
                     {
                         context.Database.EnsureCreated();
                         logger.LogInformation("回退：数据库通过 EnsureCreated 创建完成");
-
-                        // 确保有Snap.Metadata仓库记录
-                        EnsureSnapMetadataRepository(context, logger);
                     }
                     catch (Exception ensureEx)
                     {
@@ -369,60 +363,21 @@ public static class Program
         }
     }
 
-    private static void EnsureSnapMetadataRepository(AppDbContext context, ILogger logger)
-    {
-        try
-        {
-            var snapMetadataRepo = context.GitRepositories
-                .FirstOrDefault(r => r.Name == "Snap.Metadata");
-
-            if (snapMetadataRepo == null)
-            {
-                logger.LogInformation("添加Snap.Metadata仓库记录到数据库");
-
-                var newRepo = new Snap.Hutao.Server.Model.Entity.GitRepository
-                {
-                    Name = "Snap.Metadata",
-                    HttpsUrl = "https://github.com/SnapHutaoRemasteringProject/Snap.Metadata",
-                    WebUrl = "https://github.com/SnapHutaoRemasteringProject/Snap.Metadata",
-                    Type = "metadata",
-                    CreatedAt = DateTime.UtcNow,
-                    UpdatedAt = null,
-                };
-
-                context.GitRepositories.Add(newRepo);
-                context.SaveChanges();
-                logger.LogInformation("Snap.Metadata仓库记录添加成功");
-            }
-            else
-            {
-                logger.LogInformation("Snap.Metadata仓库记录已存在");
-            }
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "确保Snap.Metadata仓库记录时发生错误");
-
-            // 不抛出异常，避免影响服务器启动
-        }
-    }
-
     private static void RefreshMetadataOnStartup(IHost app)
     {
         using (IServiceScope scope = app.Services.CreateScope())
         {
             var logger = scope.ServiceProvider.GetRequiredService<ILogger<IHost>>();
             var metadataRefreshService = scope.ServiceProvider.GetRequiredService<Snap.Hutao.Server.Service.Metadata.MetadataRefreshService>();
+            var statisticsService = scope.ServiceProvider.GetRequiredService<GachaLogStatisticsService>();
 
             try
             {
                 logger.LogInformation("服务器启动时开始执行元数据刷新...");
 
-                // 刷新祈愿活动元数据
                 metadataRefreshService.RefreshGachaEventsAsync().GetAwaiter().GetResult();
-
-                // 刷新已知物品元数据
                 metadataRefreshService.RefreshKnownItemsAsync().GetAwaiter().GetResult();
+                Task.Run(async () => await statisticsService.RunAsync()).Wait();
 
                 logger.LogInformation("服务器启动时元数据刷新完成");
             }
