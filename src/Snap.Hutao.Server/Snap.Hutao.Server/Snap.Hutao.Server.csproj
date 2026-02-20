@@ -38,6 +38,7 @@
     </PackageReference>
     <PackageReference Include="Swashbuckle.AspNetCore" Version="9.0.6" />
     <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="9.0.6" />
+	<PackageReference Include="Snap.LibGit2Sharp" Version="0.31.1-preview.0.4" />
   </ItemGroup>
 
   <ItemGroup>

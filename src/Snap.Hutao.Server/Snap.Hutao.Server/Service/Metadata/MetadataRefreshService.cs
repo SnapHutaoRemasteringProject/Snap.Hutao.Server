@@ -1,12 +1,12 @@
 // Copyright (c) DGP Studio. All rights reserved.
 // Licensed under the MIT license.
 
+using LibGit2Sharp;
 using Newtonsoft.Json.Linq;
+using Snap.Hutao.Server.Extension;
 using Snap.Hutao.Server.Model.Context;
 using Snap.Hutao.Server.Model.Entity;
 using Snap.Hutao.Server.Model.Metadata;
-using System.Diagnostics;
-using System.Text.Json;
 
 namespace Snap.Hutao.Server.Service.Metadata;
 
@@ -33,106 +33,50 @@ public sealed class MetadataRefreshService
         {
             logger.LogInformation("开始刷新祈愿活动元数据");
 
-            // 1. 从数据库获取Snap.Metadata仓库信息
-            var gitRepo = await appDbContext.GitRepositories
-                .FirstOrDefaultAsync(r => r.Name == "Snap.Metadata", cancellationToken)
-                .ConfigureAwait(false);
+            await EnsureGitRepo(cancellationToken);
 
-            if (gitRepo == null)
+            string path = "Snap.Metadata";
+
+            // 1. 读取GachaEvent.json文件
+            string jsonFilePath = Path.Combine(path, "Genshin", "CHS", "GachaEvent.json");
+            if (!File.Exists(jsonFilePath))
             {
-                logger.LogError("未找到Snap.Metadata仓库配置");
+                logger.LogError("未找到GachaEvent.json文件: {Path}", jsonFilePath);
                 return;
             }
 
-            // 2. 创建临时目录
-            string tempPath = Path.Combine(Path.GetTempPath(), $"SnapMetadata_{Guid.NewGuid():N}");
-            Directory.CreateDirectory(tempPath);
+            string jsonContent = await File.ReadAllTextAsync(jsonFilePath, cancellationToken).ConfigureAwait(false);
+            var gachaEvents = JsonSerializer.Deserialize<List<GachaEventJson>>(jsonContent);
+
+            if (gachaEvents == null || gachaEvents.Count == 0)
+            {
+                logger.LogWarning("GachaEvent.json文件为空或解析失败");
+                return;
+            }
+
+            // 2. 转换为实体并保存到数据库
+            var entities = gachaEvents.Select(ConvertToEntity).ToList();
+
+            // 使用事务确保数据一致性
+            await using var transaction = await metadataDbContext.Database.BeginTransactionAsync(cancellationToken).ConfigureAwait(false);
 
             try
             {
-                // 3. 使用系统git命令克隆仓库（避免LibGit2Sharp在Docker环境中的认证问题）
-                logger.LogInformation("正在克隆仓库: {Url} 到 {Path}", gitRepo.HttpsUrl, tempPath);
+                // 清空现有数据
+                await metadataDbContext.GachaEvents.ExecuteDeleteAsync(cancellationToken).ConfigureAwait(false);
 
-                using var process = new Process();
-                process.StartInfo.FileName = "git";
-                process.StartInfo.Arguments = $"clone --depth 1 {gitRepo.HttpsUrl} \"{tempPath}\"";
-                process.StartInfo.RedirectStandardOutput = true;
-                process.StartInfo.RedirectStandardError = true;
-                process.StartInfo.UseShellExecute = false;
-                process.StartInfo.CreateNoWindow = true;
+                // 插入新数据
+                await metadataDbContext.GachaEvents.AddRangeAsync(entities, cancellationToken).ConfigureAwait(false);
+                await metadataDbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
-                process.Start();
-
-                string output = await process.StandardOutput.ReadToEndAsync(cancellationToken);
-                string error = await process.StandardError.ReadToEndAsync(cancellationToken);
-
-                await process.WaitForExitAsync(cancellationToken);
-
-                if (process.ExitCode != 0)
-                {
-                    logger.LogError("Git克隆失败，退出代码: {ExitCode}, 错误: {Error}", process.ExitCode, error);
-                    return;
-                }
-
-                logger.LogInformation("Git克隆成功: {Output}", output);
-
-                // 4. 读取GachaEvent.json文件
-                string jsonFilePath = Path.Combine(tempPath, "Genshin", "CHS", "GachaEvent.json");
-                if (!File.Exists(jsonFilePath))
-                {
-                    logger.LogError("未找到GachaEvent.json文件: {Path}", jsonFilePath);
-                    return;
-                }
-
-                string jsonContent = await File.ReadAllTextAsync(jsonFilePath, cancellationToken).ConfigureAwait(false);
-                var gachaEvents = JsonSerializer.Deserialize<List<GachaEventJson>>(jsonContent);
-
-                if (gachaEvents == null || gachaEvents.Count == 0)
-                {
-                    logger.LogWarning("GachaEvent.json文件为空或解析失败");
-                    return;
-                }
-
-                // 5. 转换为实体并保存到数据库
-                var entities = gachaEvents.Select(ConvertToEntity).ToList();
-
-                // 使用事务确保数据一致性
-                await using var transaction = await metadataDbContext.Database.BeginTransactionAsync(cancellationToken).ConfigureAwait(false);
-
-                try
-                {
-                    // 清空现有数据
-                    await metadataDbContext.GachaEvents.ExecuteDeleteAsync(cancellationToken).ConfigureAwait(false);
-
-                    // 插入新数据
-                    await metadataDbContext.GachaEvents.AddRangeAsync(entities, cancellationToken).ConfigureAwait(false);
-                    await metadataDbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-
-                    await transaction.CommitAsync(cancellationToken).ConfigureAwait(false);
-                    logger.LogInformation("成功更新祈愿活动元数据，共 {Count} 条记录", entities.Count);
-                }
-                catch (Exception ex)
-                {
-                    await transaction.RollbackAsync(cancellationToken).ConfigureAwait(false);
-                    logger.LogError(ex, "保存祈愿活动数据到数据库时发生错误");
-                    throw;
-                }
+                await transaction.CommitAsync(cancellationToken).ConfigureAwait(false);
+                logger.LogInformation("成功更新祈愿活动元数据，共 {Count} 条记录", entities.Count);
             }
-            finally
+            catch (Exception ex)
             {
-                // 6. 清理临时目录
-                try
-                {
-                    if (Directory.Exists(tempPath))
-                    {
-                        Directory.Delete(tempPath, true);
-                        logger.LogInformation("已清理临时目录: {Path}", tempPath);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    logger.LogWarning(ex, "清理临时目录时发生错误: {Path}", tempPath);
-                }
+                await transaction.RollbackAsync(cancellationToken).ConfigureAwait(false);
+                logger.LogError(ex, "保存祈愿活动数据到数据库时发生错误");
+                throw;
             }
         }
         catch (Exception ex)
@@ -199,131 +143,75 @@ public sealed class MetadataRefreshService
         {
             logger.LogInformation("开始刷新已知物品元数据");
 
-            // 1. 从数据库获取Snap.Metadata仓库信息
-            var gitRepo = await appDbContext.GitRepositories
-                .FirstOrDefaultAsync(r => r.Name == "Snap.Metadata", cancellationToken)
-                .ConfigureAwait(false);
+            await EnsureGitRepo(cancellationToken);
 
-            if (gitRepo == null)
+            string path = "Snap.Metadata";
+
+            // 1. 读取Material.json文件
+            string materialJsonPath = Path.Combine(path, "Genshin", "CHS", "Material.json");
+            if (!File.Exists(materialJsonPath))
             {
-                logger.LogError("未找到Snap.Metadata仓库配置");
+                logger.LogError("未找到Material.json文件: {Path}", materialJsonPath);
                 return;
             }
 
-            // 2. 创建临时目录
-            string tempPath = Path.Combine(Path.GetTempPath(), $"SnapMetadata_{Guid.NewGuid():N}");
-            Directory.CreateDirectory(tempPath);
+            string materialJsonContent = await File.ReadAllTextAsync(materialJsonPath, cancellationToken).ConfigureAwait(false);
+            var materials = (JArray)JContainer.Parse(materialJsonContent);
+
+            // 2. 读取DisplayItem.json文件
+            string displayItemJsonPath = Path.Combine(path, "Genshin", "CHS", "DisplayItem.json");
+            if (!File.Exists(displayItemJsonPath))
+            {
+                logger.LogError("未找到DisplayItem.json文件: {Path}", displayItemJsonPath);
+                return;
+            }
+
+            string displayItemJsonContent = await File.ReadAllTextAsync(displayItemJsonPath, cancellationToken).ConfigureAwait(false);
+            var displayItems = (JArray)JContainer.Parse(displayItemJsonContent);
+
+            // 3. 读取Weapon.json文件
+            string weaponJsonPath = Path.Combine(path, "Genshin", "CHS", "Weapon.json");
+            if (!File.Exists(weaponJsonPath))
+            {
+                logger.LogError("Weapon.json文件: {Path}", weaponJsonPath);
+                return;
+            }
+
+            string weaponJsonContent = await File.ReadAllTextAsync(weaponJsonPath, cancellationToken).ConfigureAwait(false);
+            var weapons = (JArray)JContainer.Parse(weaponJsonContent);
+
+            if ((materials == null || materials.Count == 0) && (displayItems == null || displayItems.Count == 0) && (weapons == null || weapons.Count == 0))
+            {
+                logger.LogWarning("Material.json和DisplayItem.json和Weapon.json文件都为空或解析失败");
+                return;
+            }
+
+            var knownItems = new List<KnownItem>();
+
+            AddKnownItems(knownItems, materials);
+            AddKnownItems(knownItems, displayItems);
+            AddKnownItems(knownItems, weapons);
+
+            // 4. 保存到数据库
+            await using var transaction = await metadataDbContext.Database.BeginTransactionAsync(cancellationToken).ConfigureAwait(false);
 
             try
             {
-                // 3. 使用系统git命令克隆仓库
-                logger.LogInformation("正在克隆仓库: {Url} 到 {Path}", gitRepo.HttpsUrl, tempPath);
+                // 清空现有数据
+                await metadataDbContext.KnownItems.ExecuteDeleteAsync(cancellationToken).ConfigureAwait(false);
 
-                using var process = new Process();
-                process.StartInfo.FileName = "git";
-                process.StartInfo.Arguments = $"clone --depth 1 {gitRepo.HttpsUrl} \"{tempPath}\"";
-                process.StartInfo.RedirectStandardOutput = true;
-                process.StartInfo.RedirectStandardError = true;
-                process.StartInfo.UseShellExecute = false;
-                process.StartInfo.CreateNoWindow = true;
+                // 插入新数据
+                await metadataDbContext.KnownItems.AddRangeAsync(knownItems, cancellationToken).ConfigureAwait(false);
+                await metadataDbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
-                process.Start();
-
-                string output = await process.StandardOutput.ReadToEndAsync(cancellationToken);
-                string error = await process.StandardError.ReadToEndAsync(cancellationToken);
-
-                await process.WaitForExitAsync(cancellationToken);
-
-                if (process.ExitCode != 0)
-                {
-                    logger.LogError("Git克隆失败，退出代码: {ExitCode}, 错误: {Error}", process.ExitCode, error);
-                    return;
-                }
-
-                logger.LogInformation("Git克隆成功: {Output}", output);
-
-                // 4. 读取Material.json文件
-                string materialJsonPath = Path.Combine(tempPath, "Genshin", "CHS", "Material.json");
-                if (!File.Exists(materialJsonPath))
-                {
-                    logger.LogError("未找到Material.json文件: {Path}", materialJsonPath);
-                    return;
-                }
-
-                string materialJsonContent = await File.ReadAllTextAsync(materialJsonPath, cancellationToken).ConfigureAwait(false);
-                var materials = (JArray)JContainer.Parse(materialJsonContent);
-
-                // 5. 读取DisplayItem.json文件
-                string displayItemJsonPath = Path.Combine(tempPath, "Genshin", "CHS", "DisplayItem.json");
-                if (!File.Exists(displayItemJsonPath))
-                {
-                    logger.LogError("未找到DisplayItem.json文件: {Path}", displayItemJsonPath);
-                    return;
-                }
-
-                string displayItemJsonContent = await File.ReadAllTextAsync(displayItemJsonPath, cancellationToken).ConfigureAwait(false);
-                var displayItems = (JArray)JContainer.Parse(displayItemJsonContent);
-
-                // 6. 读取Weapon.json文件
-                string weaponJsonPath = Path.Combine(tempPath, "Genshin", "CHS", "Weapon.json");
-                if (!File.Exists(weaponJsonPath))
-                {
-                    logger.LogError("Weapon.json文件: {Path}", weaponJsonPath);
-                    return;
-                }
-
-                string weaponJsonContent = await File.ReadAllTextAsync(weaponJsonPath, cancellationToken).ConfigureAwait(false);
-                var weapons = (JArray)JContainer.Parse(weaponJsonContent);
-
-                if ((materials == null || materials.Count == 0) && (displayItems == null || displayItems.Count == 0) && (weapons == null || weapons.Count == 0))
-                {
-                    logger.LogWarning("Material.json和DisplayItem.json和Weapon.json文件都为空或解析失败");
-                    return;
-                }
-
-                var knownItems = new List<KnownItem>();
-
-                AddKnownItems(knownItems, materials);
-                AddKnownItems(knownItems, displayItems);
-                AddKnownItems(knownItems, weapons);
-
-                // 7. 保存到数据库
-                await using var transaction = await metadataDbContext.Database.BeginTransactionAsync(cancellationToken).ConfigureAwait(false);
-
-                try
-                {
-                    // 清空现有数据
-                    await metadataDbContext.KnownItems.ExecuteDeleteAsync(cancellationToken).ConfigureAwait(false);
-
-                    // 插入新数据
-                    await metadataDbContext.KnownItems.AddRangeAsync(knownItems, cancellationToken).ConfigureAwait(false);
-                    await metadataDbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-
-                    await transaction.CommitAsync(cancellationToken).ConfigureAwait(false);
-                    logger.LogInformation("成功更新已知物品元数据，共 {Count} 条记录", knownItems.Count);
-                }
-                catch (Exception ex)
-                {
-                    await transaction.RollbackAsync(cancellationToken).ConfigureAwait(false);
-                    logger.LogError(ex, "保存已知物品数据到数据库时发生错误");
-                    throw;
-                }
+                await transaction.CommitAsync(cancellationToken).ConfigureAwait(false);
+                logger.LogInformation("成功更新已知物品元数据，共 {Count} 条记录", knownItems.Count);
             }
-            finally
+            catch (Exception ex)
             {
-                // 8. 清理临时目录
-                try
-                {
-                    if (Directory.Exists(tempPath))
-                    {
-                        Directory.Delete(tempPath, true);
-                        logger.LogInformation("已清理临时目录: {Path}", tempPath);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    logger.LogWarning(ex, "清理临时目录时发生错误: {Path}", tempPath);
-                }
+                await transaction.RollbackAsync(cancellationToken).ConfigureAwait(false);
+                logger.LogError(ex, "保存已知物品数据到数据库时发生错误");
+                throw;
             }
         }
         catch (Exception ex)
@@ -347,6 +235,80 @@ public sealed class MetadataRefreshService
                         Quality = (uint)item["RankLevel"]!,
                     });
                 }
+            }
+        }
+    }
+
+    private async Task EnsureGitRepo(CancellationToken cancellationToken = default)
+    {
+        GitRepository? gitRepo = await appDbContext.GitRepositories
+            .FirstOrDefaultAsync(r => r.Name == "Snap.Metadata", cancellationToken)
+            .ConfigureAwait(false);
+
+        string directory = "Snap.Metadata";
+
+        if (gitRepo == null)
+        {
+            logger.LogError("未找到Snap.Metadata仓库配置");
+            return;
+        }
+
+        FetchOptions fetchOptions = new()
+        {
+            Depth = 1,
+            Prune = true,
+            TagFetchMode = TagFetchMode.None,
+            ProxyOptions =
+    {
+        ProxyType = ProxyType.Auto,
+    },
+            CertificateCheck = static (cert, valid, host) => true,
+        };
+
+        if (!Repository.IsValid(directory))
+        {
+            if (Directory.Exists(directory))
+            {
+                Directory.Delete(directory, true);
+            }
+
+            Repository.AdvancedClone(gitRepo.HttpsUrl, directory, new(fetchOptions)
+            {
+                Checkout = true,
+            });
+        }
+        else
+        {
+            // We need to ensure local repo is up to date
+            using (Repository repo = new(directory))
+            {
+                Configuration config = repo.Config;
+                config.Set("core.longpaths", true);
+                config.Set("safe.directory", true);
+                if (string.IsNullOrEmpty(fetchOptions.ProxyOptions.Url))
+                {
+                    config.Unset("http.proxy");
+                    config.Unset("https.proxy");
+                }
+                else
+                {
+                    config.Set("http.proxy", fetchOptions.ProxyOptions.Url);
+                    config.Set("https.proxy", fetchOptions.ProxyOptions.Url);
+                }
+
+                repo.Network.Remotes.Update("origin", remote => remote.Url = gitRepo.HttpsUrl);
+                repo.RemoveUntrackedFiles();
+                fetchOptions.UpdateFetchHead = false;
+                Commands.Fetch(repo, repo.Head.RemoteName, Array.Empty<string>(), fetchOptions, default);
+
+                // Manually patch .git/shallow file
+                File.WriteAllText(Path.Combine(directory, ".git//shallow"), string.Join("", repo.Branches.Where(static branch => branch.IsRemote).Select(static branch => $"{branch.Tip.Sha}\n")));
+
+                Branch remoteBranch = repo.Branches["origin/main"];
+                Branch localBranch = repo.Branches["main"] ?? repo.CreateBranch("main", remoteBranch.Tip);
+                repo.Branches.Update(localBranch, b => b.TrackedBranch = remoteBranch.CanonicalName);
+                repo.Reset(ResetMode.Hard, remoteBranch.Tip);
+                repo.RemoveUntrackedFiles();
             }
         }
     }
