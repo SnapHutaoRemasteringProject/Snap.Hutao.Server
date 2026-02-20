@@ -186,8 +186,8 @@ public class ServiceController : ControllerBase
 
         if (!string.IsNullOrEmpty(q))
         {
-            query = query.Where(u => 
-                u.UserName.Contains(q) || 
+            query = query.Where(u =>
+                u.UserName.Contains(q) ||
                 u.NormalizedUserName.Contains(q.ToUpperInvariant()) ||
                 u.Email.Contains(q));
         }

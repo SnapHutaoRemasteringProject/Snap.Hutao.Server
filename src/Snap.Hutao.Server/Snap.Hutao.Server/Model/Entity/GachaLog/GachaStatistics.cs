@@ -10,6 +10,8 @@ public class GachaStatistics
     public const string WeaponEventGachaDistribution = "WeaponEventGachaDistribution";
     public const string StandardGachaDistribution = "StandardGachaDistribution";
     public const string ChronicledGachaDistribution = "ChronicledGachaDistribution";
+    public const string BeyondStandardGachaDistribution = "BeyondStandardGachaDistribution";
+    public const string BeyondEventGachaDistribution = "BeyondEventGachaDistribution";
     public const string GachaEventStatistics = "GachaEventStatistics";
 
     [Key]

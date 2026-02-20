@@ -105,6 +105,7 @@ public static class Program
                 config.ScheduleJob<SpiralAbyssRecordCleanJob>(t => t.StartNow().WithCronSchedule("0 0 4 16 * ?"));
                 config.ScheduleJob<RoleCombatStatisticsRefreshJob>(t => t.StartNow().WithCronSchedule("0 10 */1 * * ?"));
                 config.ScheduleJob<RoleCombatRecordCleanJob>(t => t.StartNow().WithCronSchedule("0 0 4 1 * ?"));
+                config.ScheduleJob<MetadataRefreshJob>(t => t.StartNow().WithCronSchedule("0 */30 * * * ?"));
             })
             .AddQuartzServer(options => options.WaitForJobsToComplete = true)
             .AddResponseCompression()
@@ -123,7 +124,8 @@ public static class Program
             .AddScoped<RedeemService>()
             .AddSingleton<AfdianWebhookService>()
             .AddSingleton<CdnExpireService>()
-            //.AddSingleton<DiscordService>()
+
+            // .AddSingleton<DiscordService>()
             .AddSingleton<GachaLogExpireService>()
             .AddSingleton<IAuthorizationMiddlewareResultHandler, ResponseAuthorizationMiddlewareResultHandler>()
             .AddSingleton<IRankService, RankService>()
@@ -180,7 +182,9 @@ public static class Program
             .AddTransient<SpiralAbyssRecordCleanJob>()
             .AddTransient<ValidateCdnPermission>()
             .AddTransient<ValidateGachaLogPermission>()
-            .AddTransient<ValidateMaintainPermission>();
+            .AddTransient<ValidateMaintainPermission>()
+            .AddTransient<MetadataRefreshJob>()
+            .AddScoped<Snap.Hutao.Server.Service.Metadata.MetadataRefreshService>();
 
         // Authentication
         services
@@ -233,13 +237,12 @@ public static class Program
                 jsonOptions.WriteIndented = true;
             });
 
-        //appBuilder.Host.ConfigureDiscordBot<HutaoServerBot>((hostContext, botContext) =>
-        //{
+        // appBuilder.Host.ConfigureDiscordBot<HutaoServerBot>((hostContext, botContext) =>
+        // {
         //    botContext.OwnerIds = appOptions.Discord.OwnerIds.Select(id => (Snowflake)id);
         //    botContext.Intents = GatewayIntents.LibraryRecommended | GatewayIntents.DirectMessages;
         //    botContext.Token = appOptions.Discord.Token;
-        //});
-
+        // });
         WebApplication app = appBuilder.Build();
         MigrateDatabase(app);
 
@@ -296,13 +299,12 @@ public static class Program
 
         // Endpoint
         app.MapControllers();
+
+        RefreshMetadataOnStartup(app);
+
         app.Run();
     }
 
-    /// <summary>
-    /// 迁移数据库
-    /// </summary>
-    /// <param name="app">app</param>
     private static void MigrateDatabase(IHost app)
     {
         using (IServiceScope scope = app.Services.CreateScope())
@@ -316,7 +318,6 @@ public static class Program
             {
                 try
                 {
-                    // 检查是否有待应用的迁移
                     var pendingMigrations = context.Database.GetPendingMigrations().ToList();
                     if (pendingMigrations.Any())
                     {
@@ -331,7 +332,6 @@ public static class Program
                     {
                         logger.LogInformation("没有待应用的迁移");
 
-                        // 检查数据库是否已创建
                         if (!context.Database.CanConnect())
                         {
                             logger.LogWarning("无法连接到数据库，尝试创建数据库...");
@@ -339,16 +339,21 @@ public static class Program
                             logger.LogInformation("数据库创建完成");
                         }
                     }
+
+                    // 确保有Snap.Metadata仓库记录
+                    EnsureSnapMetadataRepository(context, logger);
                 }
                 catch (Exception ex)
                 {
                     logger.LogError(ex, "数据库迁移/创建失败，尝试回退到 EnsureCreated");
 
-                    // 如果迁移失败，尝试使用 EnsureCreated 作为回退
                     try
                     {
                         context.Database.EnsureCreated();
                         logger.LogInformation("回退：数据库通过 EnsureCreated 创建完成");
+                        
+                        // 确保有Snap.Metadata仓库记录
+                        EnsureSnapMetadataRepository(context, logger);
                     }
                     catch (Exception ensureEx)
                     {
@@ -360,6 +365,63 @@ public static class Program
             else
             {
                 logger.LogWarning("数据库不是关系型数据库，跳过迁移");
+            }
+        }
+    }
+
+    private static void EnsureSnapMetadataRepository(AppDbContext context, ILogger logger)
+    {
+        try
+        {
+            var snapMetadataRepo = context.GitRepositories
+                .FirstOrDefault(r => r.Name == "Snap.Metadata");
+
+            if (snapMetadataRepo == null)
+            {
+                logger.LogInformation("添加Snap.Metadata仓库记录到数据库");
+                
+                var newRepo = new Snap.Hutao.Server.Model.Entity.GitRepository
+                {
+                    Name = "Snap.Metadata",
+                    HttpsUrl = "https://github.com/SnapHutaoRemasteringProject/Snap.Metadata",
+                    WebUrl = "https://github.com/SnapHutaoRemasteringProject/Snap.Metadata",
+                    Type = "metadata",
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = null
+                };
+
+                context.GitRepositories.Add(newRepo);
+                context.SaveChanges();
+                logger.LogInformation("Snap.Metadata仓库记录添加成功");
+            }
+            else
+            {
+                logger.LogInformation("Snap.Metadata仓库记录已存在");
+            }
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "确保Snap.Metadata仓库记录时发生错误");
+            // 不抛出异常，避免影响服务器启动
+        }
+    }
+
+    private static void RefreshMetadataOnStartup(IHost app)
+    {
+        using (IServiceScope scope = app.Services.CreateScope())
+        {
+            var logger = scope.ServiceProvider.GetRequiredService<ILogger<IHost>>();
+            var metadataRefreshService = scope.ServiceProvider.GetRequiredService<Snap.Hutao.Server.Service.Metadata.MetadataRefreshService>();
+
+            try
+            {
+                logger.LogInformation("服务器启动时开始执行元数据刷新...");
+                metadataRefreshService.RefreshGachaEventsAsync().GetAwaiter().GetResult();
+                logger.LogInformation("服务器启动时元数据刷新完成");
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "服务器启动时元数据刷新失败");
             }
         }
     }

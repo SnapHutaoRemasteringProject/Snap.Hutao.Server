@@ -62,6 +62,22 @@ public class GachaLogController : ControllerBase
 
     [Authorize]
     [ServiceFilter(typeof(ValidateGachaLogPermission))]
+    [HttpGet("Statistics/Distribution/BeyondEvent")]
+    public IActionResult BeyondEventDistribution()
+    {
+        return GetGachaLogStatistics<GachaDistribution>(GachaStatistics.BeyondEventGachaDistribution);
+    }
+
+    [Authorize]
+    [ServiceFilter(typeof(ValidateGachaLogPermission))]
+    [HttpGet("Statistics/Distribution/BeyondStandard")]
+    public IActionResult BeyondStandardDistribution()
+    {
+        return GetGachaLogStatistics<GachaDistribution>(GachaStatistics.BeyondStandardGachaDistribution);
+    }
+
+    [Authorize]
+    [ServiceFilter(typeof(ValidateGachaLogPermission))]
     [HttpGet("Entries")]
     public async Task<IActionResult> GetGachaEntriesAsync()
     {
