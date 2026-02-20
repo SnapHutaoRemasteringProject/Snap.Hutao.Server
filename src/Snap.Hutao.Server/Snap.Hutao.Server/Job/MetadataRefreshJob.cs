@@ -21,7 +21,12 @@ public sealed class MetadataRefreshJob : IJob
         SentryId id = SentrySdk.CaptureCheckIn("MetadataRefreshJob", CheckInStatus.InProgress);
         try
         {
+            // 刷新祈愿活动元数据
             await metadataRefreshService.RefreshGachaEventsAsync(context.CancellationToken).ConfigureAwait(false);
+
+            // 刷新已知物品元数据
+            await metadataRefreshService.RefreshKnownItemsAsync(context.CancellationToken).ConfigureAwait(false);
+
             SentrySdk.CaptureCheckIn("MetadataRefreshJob", CheckInStatus.Ok, id);
         }
         catch
