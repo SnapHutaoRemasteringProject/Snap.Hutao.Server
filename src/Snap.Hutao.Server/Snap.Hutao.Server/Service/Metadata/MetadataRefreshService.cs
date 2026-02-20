@@ -264,40 +264,28 @@ public sealed class MetadataRefreshService
                 string displayItemJsonContent = await File.ReadAllTextAsync(displayItemJsonPath, cancellationToken).ConfigureAwait(false);
                 var displayItems = (JArray)JContainer.Parse(displayItemJsonContent);
 
-                if ((materials == null || materials.Count == 0) && (displayItems == null || displayItems.Count == 0))
+                // 6. 读取Weapon.json文件
+                string weaponJsonPath = Path.Combine(tempPath, "Genshin", "CHS", "Weapon.json");
+                if (!File.Exists(weaponJsonPath))
                 {
-                    logger.LogWarning("Material.json和DisplayItem.json文件都为空或解析失败");
+                    logger.LogError("Weapon.json文件: {Path}", weaponJsonPath);
+                    return;
+                }
+
+                string weaponJsonContent = await File.ReadAllTextAsync(weaponJsonPath, cancellationToken).ConfigureAwait(false);
+                var weapons = (JArray)JContainer.Parse(weaponJsonContent);
+
+                if ((materials == null || materials.Count == 0) && (displayItems == null || displayItems.Count == 0) && (weapons == null || weapons.Count == 0))
+                {
+                    logger.LogWarning("Material.json和DisplayItem.json和Weapon.json文件都为空或解析失败");
                     return;
                 }
 
                 var knownItems = new List<KnownItem>();
 
-                if (materials != null)
-                {
-                    foreach (var material in materials)
-                    {
-                        knownItems.Add(new KnownItem
-                        {
-                            Id = (uint)material["Id"]!,
-                            Quality = (uint)material["RankLevel"]!,
-                        });
-                    }
-                }
-
-                if (displayItems != null)
-                {
-                    foreach (var displayItem in displayItems)
-                    {
-                        if (!knownItems.Any(x => x.Id == (uint)displayItem["Id"]!))
-                        {
-                            knownItems.Add(new KnownItem
-                            {
-                                Id = (uint)displayItem["Id"]!,
-                                Quality = (uint)displayItem["RankLevel"]!,
-                            });
-                        }
-                    }
-                }
+                AddKnownItems(knownItems, materials);
+                AddKnownItems(knownItems, displayItems);
+                AddKnownItems(knownItems, weapons);
 
                 // 7. 保存到数据库
                 await using var transaction = await metadataDbContext.Database.BeginTransactionAsync(cancellationToken).ConfigureAwait(false);
@@ -342,6 +330,24 @@ public sealed class MetadataRefreshService
         {
             logger.LogError(ex, "刷新已知物品元数据时发生错误");
             throw;
+        }
+    }
+
+    private static void AddKnownItems(List<KnownItem> knownItems, JArray? array)
+    {
+        if (array != null)
+        {
+            foreach (var item in array)
+            {
+                if (!knownItems.Any(x => x.Id == (uint)item["Id"]!))
+                {
+                    knownItems.Add(new KnownItem
+                    {
+                        Id = (uint)item["Id"]!,
+                        Quality = (uint)item["RankLevel"]!,
+                    });
+                }
+            }
         }
     }
 
