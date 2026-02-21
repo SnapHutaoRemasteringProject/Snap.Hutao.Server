@@ -3,6 +3,7 @@
 
 using Snap.Hutao.Server.Controller.Filter;
 using Snap.Hutao.Server.Model.Response;
+using Snap.Hutao.Server.Model.Update;
 using Snap.Hutao.Server.Service.Distribution;
 
 namespace Snap.Hutao.Server.Controller;

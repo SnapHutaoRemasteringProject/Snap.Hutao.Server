@@ -24,16 +24,6 @@ public class MiscController : ControllerBase
         this.appDbContext = appDbContext;
     }
 
-    [HttpGet("patch/hutao")]
-    public IActionResult GetPatchInfo()
-    {
-        return Response<object>.Success("OK", new
-        {
-            validation = "",
-            version = "1.18.1.0",
-            mirrors = Array.Empty<string>(),
-        });
-    }
 
     [HttpGet("git-repository/all")]
     public async Task<IActionResult> GetAllGitRepositories([FromQuery] string? name = null)

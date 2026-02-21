@@ -2,6 +2,7 @@
 // Licensed under the MIT license.
 
 using Snap.Hutao.Server.Model.Response;
+using Snap.Hutao.Server.Model.Update;
 using Snap.Hutao.Server.Option;
 
 namespace Snap.Hutao.Server.Service.Distribution;

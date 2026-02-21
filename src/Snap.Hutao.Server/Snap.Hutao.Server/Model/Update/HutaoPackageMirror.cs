@@ -1,7 +1,7 @@
 ﻿// Copyright (c) DGP Studio. All rights reserved.
 // Licensed under the MIT license.
 
-namespace Snap.Hutao.Server.Service.Distribution;
+namespace Snap.Hutao.Server.Model.Update;
 
 public sealed class HutaoPackageMirror
 {
@@ -20,4 +20,6 @@ public sealed class HutaoPackageMirror
 
     [JsonPropertyName("mirror_type")]
     public string MirrorType { get; set; } = default!;
+
+    // Direct;Archive;Browser
 }
