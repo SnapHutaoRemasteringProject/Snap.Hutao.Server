@@ -1,4 +1,8 @@
-﻿using Snap.Hutao.Server.Model.Response;
+﻿// Copyright (c) DGP Studio. All rights reserved.
+// Licensed under the MIT license.
+
+using Snap.Hutao.Server.Model.Context;
+using Snap.Hutao.Server.Model.Response;
 using Snap.Hutao.Server.Model.Update;
 
 namespace Snap.Hutao.Server.Controller;
@@ -7,18 +11,51 @@ namespace Snap.Hutao.Server.Controller;
 [ApiController]
 public class PatchController : ControllerBase
 {
-    [HttpGet("hutao")]
-    public IActionResult GetPatchInfo()
+    private readonly AppDbContext dbContext;
+
+    public PatchController(AppDbContext dbContext)
     {
-        return Response<HutaoPackageInformation>.Success("OK", new HutaoPackageInformation()
+        this.dbContext = dbContext;
+    }
+
+    [HttpGet("hutao")]
+    public async Task<IActionResult> GetPatchInfo()
+    {
+        var packageInfos = await dbContext.HutaoPackageInformations
+            .Where(x => x.IsActive)
+            .OrderByDescending(x => x.CreatedAt)
+            .ToListAsync();
+
+        if (!packageInfos.Any())
         {
-            Validation = "ca4d77bc06650dfc20d89d9dc88835d3faa801210cbfaae4bee27432d489a724",
-            Version = Version.Parse("1.18.1.0"),
-            Mirrors =
-            [
-                new HutaoPackageMirror("https://github.yun-wang.top/https://github.com/SnapHutaoRemasteringProject/Snap.Hutao.Remastered/releases/download/1.18.1.0/Snap.Hutao.Remastered_1.18.1.0_x64.msix",
-                "github mirror", "Direct")
-            ],
-        });
+            return Response<Model.Update.HutaoPackageInformation>.Fail(ReturnCode.InvalidRequestBody, "No package information found");
+        }
+
+        var groupedByVersion = packageInfos
+            .GroupBy(x => x.Version)
+            .OrderByDescending(g => Version.Parse(g.Key))
+            .FirstOrDefault();
+
+        if (groupedByVersion == null)
+        {
+            return Response<Model.Update.HutaoPackageInformation>.Fail(ReturnCode.InvalidRequestBody, "No valid package information found");
+        }
+
+        var versionRecords = groupedByVersion.ToList();
+
+        var validation = versionRecords.First().Validation;
+
+        var mirrors = versionRecords.Select(record =>
+            new HutaoPackageMirror(record.Url, record.MirrorName, record.MirrorType))
+            .ToList();
+
+        var result = new Model.Update.HutaoPackageInformation
+        {
+            Validation = validation,
+            Version = Version.Parse(groupedByVersion.Key),
+            Mirrors = mirrors,
+        };
+
+        return Response<Model.Update.HutaoPackageInformation>.Success("OK", result);
     }
 }

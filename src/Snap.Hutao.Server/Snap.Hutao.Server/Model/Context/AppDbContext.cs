@@ -99,6 +99,8 @@ public sealed class AppDbContext : IdentityDbContext<HutaoUser, IdentityRole<int
     public DbSet<Tool> Tools { get; set; } = default!;
 
     public DbSet<UnlockerBanned> UnlockerBanned { get; set; } = default!;
+
+    public DbSet<HutaoPackageInformation> HutaoPackageInformations { get; set; } = default!;
     #endregion
 
     /// <inheritdoc/>

@@ -24,7 +24,6 @@ public class MiscController : ControllerBase
         this.appDbContext = appDbContext;
     }
 
-
     [HttpGet("git-repository/all")]
     public async Task<IActionResult> GetAllGitRepositories([FromQuery] string? name = null)
     {
@@ -79,7 +78,6 @@ public class MiscController : ControllerBase
     [HttpGet("tools")]
     public async Task<IActionResult> GetTools()
     {
-        // 获取额外的第三方注入工具列表
         var tools = await appDbContext.Tools
             .Where(t => t.IsActive)
             .Select(t => new
