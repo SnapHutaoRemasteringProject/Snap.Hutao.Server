@@ -7,7 +7,7 @@ namespace Snap.Hutao.Server.Controller;
 [ApiController]
 public class PatchController : ControllerBase
 {
-    [HttpGet("patch/hutao")]
+    [HttpGet("hutao")]
     public IActionResult GetPatchInfo()
     {
         return Response<HutaoPackageInformation>.Success("OK", new HutaoPackageInformation()
