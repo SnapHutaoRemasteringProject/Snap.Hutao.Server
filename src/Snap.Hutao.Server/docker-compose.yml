@@ -9,13 +9,30 @@ services:
     image: homa-server:latest
     ports:
       - "5076:80"
-      - "7076:443"
     extra_hosts:
       - "host.docker.internal:172.27.0.1"
       - "host.docker.gateway:host-gateway"
     container_name: Homa-Server
     volumes:
       - ./appsettings-homa.json:/app/appsettings.json
+    restart: unless-stopped
+    depends_on:
+      - redis
+
+  api-server:
+    build:
+      context: .
+      dockerfile: APIDockerfile
+      target: final
+    image: api-server:latest
+    ports:
+      - "5077:80"
+    extra_hosts:
+      - "host.docker.internal:172.27.0.1"
+      - "host.docker.gateway:host-gateway"
+    container_name: Homa-Server
+    volumes:
+      - ./appsettings-api.json:/app/appsettings.json
     restart: unless-stopped
     depends_on:
       - redis
