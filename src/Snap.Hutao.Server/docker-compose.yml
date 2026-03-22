@@ -30,7 +30,7 @@ services:
     extra_hosts:
       - "host.docker.internal:172.27.0.1"
       - "host.docker.gateway:host-gateway"
-    container_name: Homa-Server
+    container_name: API-Server
     volumes:
       - ./appsettings-api.json:/app/appsettings.json
     restart: unless-stopped
