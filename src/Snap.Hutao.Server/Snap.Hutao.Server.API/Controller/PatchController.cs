@@ -5,7 +5,7 @@ using Snap.Hutao.Server.Model.Context;
 using Snap.Hutao.Server.Model.Response;
 using Snap.Hutao.Server.Model.Update;
 
-namespace Snap.Hutao.Server.Controller;
+namespace Snap.Hutao.Server.API.Controller;
 
 [Route("[controller]")]
 [ApiController]

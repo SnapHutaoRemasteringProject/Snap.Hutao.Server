@@ -14,9 +14,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Snap.Hutao.Server.Core", "S
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Snap.Hutao.Server.Model", "Snap.Hutao.Server.Model\Snap.Hutao.Server.Model.csproj", "{B9546158-3881-4166-9F92-0EA8DAE5E465}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Snap.Hutao.Server.Database", "Snap.Hutao.Server.Database\Snap.Hutao.Server.Database.csproj", "{250C68B5-F709-492C-BB75-FB6FAEE752B3}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Snap.Hutao.Server.Extension", "Snap.Hutao.Server.Extension\Snap.Hutao.Server.Extension.csproj", "{56CB0868-AC26-4369-821C-C093F1007FEF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Snap.Hutao.Server.API", "Snap.Hutao.Server.API\Snap.Hutao.Server.API.csproj", "{E8C5AAA0-5EFF-4D5C-24FD-DA50D439D4AE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -36,14 +36,14 @@ Global
 		{B9546158-3881-4166-9F92-0EA8DAE5E465}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B9546158-3881-4166-9F92-0EA8DAE5E465}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B9546158-3881-4166-9F92-0EA8DAE5E465}.Release|Any CPU.Build.0 = Release|Any CPU
-		{250C68B5-F709-492C-BB75-FB6FAEE752B3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{250C68B5-F709-492C-BB75-FB6FAEE752B3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{250C68B5-F709-492C-BB75-FB6FAEE752B3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{250C68B5-F709-492C-BB75-FB6FAEE752B3}.Release|Any CPU.Build.0 = Release|Any CPU
 		{56CB0868-AC26-4369-821C-C093F1007FEF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{56CB0868-AC26-4369-821C-C093F1007FEF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{56CB0868-AC26-4369-821C-C093F1007FEF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{56CB0868-AC26-4369-821C-C093F1007FEF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E8C5AAA0-5EFF-4D5C-24FD-DA50D439D4AE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E8C5AAA0-5EFF-4D5C-24FD-DA50D439D4AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E8C5AAA0-5EFF-4D5C-24FD-DA50D439D4AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E8C5AAA0-5EFF-4D5C-24FD-DA50D439D4AE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,27 +1,31 @@
 // Copyright (c) DGP Studio. All rights reserved.
 // Licensed under the MIT license.
 
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Snap.Hutao.Server.Model.Context;
 using Snap.Hutao.Server.Model.Entity;
 using Snap.Hutao.Server.Model.Entity.Unlocker;
 using Snap.Hutao.Server.Model.Response;
 using Snap.Hutao.Server.Model.Static;
-using System.Net;
 
-namespace Snap.Hutao.Server.Controller;
+namespace Snap.Hutao.Server.API.Controller;
 
 [ApiController]
 [Route("")]
 [ApiExplorerSettings(GroupName = "Misc")]
-public class MiscController : ControllerBase
+public class APIController : ControllerBase, IDisposable
 {
     private readonly AppDbContext appDbContext;
+    private readonly HttpClient httpClient;
 
-    public MiscController(AppDbContext appDbContext)
+    public APIController(AppDbContext appDbContext)
     {
         this.appDbContext = appDbContext;
+        httpClient = new HttpClient();
+    }
+
+    public void Dispose()
+    {
+        httpClient.Dispose();
     }
 
     [HttpGet("git-repository/all")]
@@ -44,7 +48,7 @@ public class MiscController : ControllerBase
     [HttpGet("static/raw/{category}/{fileName}")]
     public IActionResult GetImage(string category, string fileName)
     {
-        string baseUrl = "https://htserver.wdg.cloudns.ch/static/raw";
+        string baseUrl = "https://static.snaphutaorp.org/static/raw";
         return Redirect($"{baseUrl}/{category}/{fileName}");
     }
 
@@ -75,43 +79,39 @@ public class MiscController : ControllerBase
         return Response<object>.Fail(ReturnCode.InvalidUploadData, "Invaild UID");
     }
 
-    [HttpGet("tools")]
-    public async Task<IActionResult> GetTools()
-    {
-        var tools = await appDbContext.Tools
-            .Where(t => t.IsActive)
-            .Select(t => new
-            {
-                t.Name,
-                t.Description,
-                t.Url,
-                t.Version
-            })
-            .ToListAsync()
-            .ConfigureAwait(false);
-
-        return Response<List<object>>.Success("OK", tools.Cast<object>().ToList());
-    }
-
     [HttpGet("ip")]
-    public IActionResult GetIpInformation()
+    public async Task<IActionResult> GetIpInformation()
     {
-        string? ipAddress = null;
-
-        if (HttpContext.Request.Headers.TryGetValue("X-Forwarded-For", out var xForwardedFor))
-        {
-            ipAddress = xForwardedFor.ToString().Split(',', StringSplitOptions.RemoveEmptyEntries)
-                .FirstOrDefault()?.Trim();
-        }
-
-        if (string.IsNullOrEmpty(ipAddress))
-        {
-            ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
-        }
-
+        string? ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
         ipAddress ??= "Unknown";
 
-        var division = "Unknown";
+        string division = "Unknown";
+
+        if (!IsLocalIp(ipAddress))
+        {
+            try
+            {
+                string url = $"http://ip-api.com/json/{ipAddress}?fields=status,country,regionName,city";
+                HttpResponseMessage response = await httpClient.GetAsync(url).ConfigureAwait(false);
+                if (response.IsSuccessStatusCode)
+                {
+                    string json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    using JsonDocument doc = JsonDocument.Parse(json);
+                    JsonElement root = doc.RootElement;
+
+                    if (root.TryGetProperty("status", out JsonElement status) && status.GetString() == "success")
+                    {
+                        if (root.TryGetProperty("city", out JsonElement city))
+                        {
+                            division = city.GetString() ?? "Unknown";
+                        }
+                    }
+                }
+            }
+            catch
+            {
+            }
+        }
 
         var ipInfo = new IPInformation
         {
@@ -125,18 +125,23 @@ public class MiscController : ControllerBase
     [HttpGet("ips")]
     public string GetIpString()
     {
-        string? ipAddress = null;
-        if (HttpContext.Request.Headers.TryGetValue("X-Forwarded-For", out var xForwardedFor))
-        {
-            ipAddress = xForwardedFor.ToString().Split(',', StringSplitOptions.RemoveEmptyEntries)
-                .FirstOrDefault()?.Trim();
-        }
-
-        if (string.IsNullOrEmpty(ipAddress))
-        {
-            ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
-        }
+        string? ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
 
         return ipAddress ?? "Unknown";
+    }
+
+    private bool IsLocalIp(string ip)
+    {
+        if (ip == "::1" || ip == "127.0.0.1")
+        {
+            return true;
+        }
+
+        if (ip.StartsWith("192.168.") || ip.StartsWith("10.") || ip.StartsWith("172.16."))
+        {
+            return true;
+        }
+
+        return false;
     }
 }

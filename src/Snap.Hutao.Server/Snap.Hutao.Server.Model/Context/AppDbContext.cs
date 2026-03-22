@@ -1,6 +1,8 @@
 ﻿// Copyright (c) DGP Studio. All rights reserved.
 // Licensed under the MIT license.
 
+namespace Snap.Hutao.Server.Model.Context;
+
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Snap.Hutao.Server.Model.Context.Configuration;
 using Snap.Hutao.Server.Model.Entity;
@@ -13,8 +15,6 @@ using Snap.Hutao.Server.Model.Entity.RoleCombat;
 using Snap.Hutao.Server.Model.Entity.SpiralAbyss;
 using Snap.Hutao.Server.Model.Entity.Telemetry;
 using Snap.Hutao.Server.Model.Entity.Unlocker;
-
-namespace Snap.Hutao.Server.Model.Context;
 
 public sealed class AppDbContext : IdentityDbContext<HutaoUser, IdentityRole<int>, int>
 {
@@ -93,10 +93,8 @@ public sealed class AppDbContext : IdentityDbContext<HutaoUser, IdentityRole<int
     public DbSet<OAuthBindIdentity> OAuthBindIdentities { get; set; } = default!;
     #endregion
 
-    #region Misc
+    #region API
     public DbSet<GitRepository> GitRepositories { get; set; } = default!;
-
-    public DbSet<Tool> Tools { get; set; } = default!;
 
     public DbSet<UnlockerBanned> UnlockerBanned { get; set; } = default!;
 

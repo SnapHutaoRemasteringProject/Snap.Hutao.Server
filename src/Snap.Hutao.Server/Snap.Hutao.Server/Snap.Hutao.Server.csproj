@@ -43,7 +43,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Snap.Hutao.Server.Core\Snap.Hutao.Server.Core.csproj" />
-    <ProjectReference Include="..\Snap.Hutao.Server.Database\Snap.Hutao.Server.Database.csproj" />
     <ProjectReference Include="..\Snap.Hutao.Server.Extension\Snap.Hutao.Server.Extension.csproj" />
     <ProjectReference Include="..\Snap.Hutao.Server.Model\Snap.Hutao.Server.Model.csproj" />
   </ItemGroup>

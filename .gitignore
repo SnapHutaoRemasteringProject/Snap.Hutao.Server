@@ -372,3 +372,4 @@ src/Snap.Hutao.Server/redis
 
 # JetBrains
 .idea/
+/src/Snap.Hutao.Server/Snap.Hutao.Server.API/appsettings.json

@@ -5,6 +5,7 @@ using Disqord;
 using Disqord.Bot.Hosting;
 using Disqord.Gateway;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.OpenApi.Models;
 using Quartz;
 using Quartz.AspNetCore;
@@ -264,6 +265,11 @@ public static class Program
             },
         });
         app.UseStaticFiles();
+
+        app.UseForwardedHeaders(new ForwardedHeadersOptions
+        {
+            ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto,
+        });
 
         // Routes
         // CORS
