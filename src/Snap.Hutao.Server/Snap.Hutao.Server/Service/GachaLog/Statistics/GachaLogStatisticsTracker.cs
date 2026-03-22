@@ -43,7 +43,7 @@ public sealed class GachaLogStatisticsTracker
     private long totalChronicledValidPullsCounter;
     private long totalStandardValidPullsCounter;
 
-    internal GachaLogStatisticsTracker(Map<int, int> idQualityMap, GachaEventBundle bundle)
+    public GachaLogStatisticsTracker(Map<int, int> idQualityMap, GachaEventBundle bundle)
     {
         this.idQualityMap = idQualityMap;
         currentAvatarEvent1 = bundle.AvatarEvent1;

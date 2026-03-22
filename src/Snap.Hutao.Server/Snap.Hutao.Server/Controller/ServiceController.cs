@@ -140,12 +140,14 @@ public class ServiceController : ControllerBase
         {
             announcement.Content = request.Content;
         }
+
         // Severity是枚举，直接赋值
         announcement.Severity = request.Severity;
         if (!string.IsNullOrEmpty(request.Link))
         {
             announcement.Link = request.Link;
         }
+
         // 注意：HutaoUploadAnnouncement没有Locale属性，但EntityAnnouncement有Locale
         // 这里保持原有的Locale不变
         if (!string.IsNullOrEmpty(request.MaxPresentVersion))

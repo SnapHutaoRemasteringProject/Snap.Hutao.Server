@@ -3,7 +3,7 @@
 
 namespace Snap.Hutao.Server.Model.GachaLog;
 
-internal sealed class GachaDistribution
+public sealed class GachaDistribution
 {
     public long TotalValidPulls { get; set; }
 

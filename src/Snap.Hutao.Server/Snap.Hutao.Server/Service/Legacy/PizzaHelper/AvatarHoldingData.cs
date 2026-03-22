@@ -3,7 +3,7 @@
 
 namespace Snap.Hutao.Server.Service.Legacy.PizzaHelper;
 
-internal sealed class AvatarHoldingData
+public sealed class AvatarHoldingData
 {
     [JsonPropertyName("uid")]
     public string Uid { get; set; } = default!;

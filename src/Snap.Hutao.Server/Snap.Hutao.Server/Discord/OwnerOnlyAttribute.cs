@@ -4,6 +4,6 @@
 namespace Snap.Hutao.Server.Discord;
 
 [AttributeUsage(AttributeTargets.Method)]
-internal sealed class OwnerOnlyAttribute : Attribute
+public sealed class OwnerOnlyAttribute : Attribute
 {
 }

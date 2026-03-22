@@ -5,7 +5,7 @@ using Snap.Hutao.Server.Model.Entity.Passport;
 
 namespace Snap.Hutao.Server.Service.Expire;
 
-internal interface IExpireService
+public interface IExpireService
 {
     ValueTask<TermExtendResult> ExtendTermForUserNameAsync(string userName, int days);
 

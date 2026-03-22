@@ -6,7 +6,7 @@ using Snap.Hutao.Server.Service.Authorization;
 
 namespace Snap.Hutao.Server.Controller;
 
-internal static class UserAuthorizationExtension
+public static class UserAuthorizationExtension
 {
     public static int GetUserId(this ControllerBase controller)
     {

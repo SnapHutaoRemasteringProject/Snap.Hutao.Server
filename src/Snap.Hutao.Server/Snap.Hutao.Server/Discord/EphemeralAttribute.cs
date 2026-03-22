@@ -4,6 +4,6 @@
 namespace Snap.Hutao.Server.Discord;
 
 [AttributeUsage(AttributeTargets.Method)]
-internal sealed class EphemeralAttribute : Attribute
+public sealed class EphemeralAttribute : Attribute
 {
 }

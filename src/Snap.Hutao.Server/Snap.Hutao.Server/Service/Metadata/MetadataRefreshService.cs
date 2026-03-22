@@ -86,57 +86,6 @@ public sealed class MetadataRefreshService
         }
     }
 
-    private static GachaEventInfo ConvertToEntity(GachaEventJson json)
-    {
-        var entity = new GachaEventInfo
-        {
-            Version = json.Version,
-            Name = json.Name,
-            Locale = "CHS",
-            Order = (uint)json.Order,
-            From = DateTime.Parse(json.From),
-            To = DateTime.Parse(json.To),
-            Type = (GachaConfigType)json.Type,
-        };
-
-        for (int i = 0; i < Math.Min(json.UpOrangeList.Count, 16); i++)
-        {
-            switch (i)
-            {
-                case 0: entity.UpOrangeItem1 = (uint)json.UpOrangeList[i]; break;
-                case 1: entity.UpOrangeItem2 = (uint)json.UpOrangeList[i]; break;
-                case 2: entity.UpOrangeItem3 = (uint)json.UpOrangeList[i]; break;
-                case 3: entity.UpOrangeItem4 = (uint)json.UpOrangeList[i]; break;
-                case 4: entity.UpOrangeItem5 = (uint)json.UpOrangeList[i]; break;
-                case 5: entity.UpOrangeItem6 = (uint)json.UpOrangeList[i]; break;
-                case 6: entity.UpOrangeItem7 = (uint)json.UpOrangeList[i]; break;
-                case 7: entity.UpOrangeItem8 = (uint)json.UpOrangeList[i]; break;
-                case 8: entity.UpOrangeItem9 = (uint)json.UpOrangeList[i]; break;
-                case 9: entity.UpOrangeItem10 = (uint)json.UpOrangeList[i]; break;
-                case 10: entity.UpOrangeItem11 = (uint)json.UpOrangeList[i]; break;
-                case 11: entity.UpOrangeItem12 = (uint)json.UpOrangeList[i]; break;
-                case 12: entity.UpOrangeItem13 = (uint)json.UpOrangeList[i]; break;
-                case 13: entity.UpOrangeItem14 = (uint)json.UpOrangeList[i]; break;
-                case 14: entity.UpOrangeItem15 = (uint)json.UpOrangeList[i]; break;
-                case 15: entity.UpOrangeItem16 = (uint)json.UpOrangeList[i]; break;
-            }
-        }
-
-        for (int i = 0; i < Math.Min(json.UpPurpleList.Count, 5); i++)
-        {
-            switch (i)
-            {
-                case 0: entity.UpPurpleItem1 = (uint)json.UpPurpleList[i]; break;
-                case 1: entity.UpPurpleItem2 = (uint)json.UpPurpleList[i]; break;
-                case 2: entity.UpPurpleItem3 = (uint)json.UpPurpleList[i]; break;
-                case 3: entity.UpPurpleItem4 = (uint)json.UpPurpleList[i]; break;
-                case 4: entity.UpPurpleItem5 = (uint)json.UpPurpleList[i]; break;
-            }
-        }
-
-        return entity;
-    }
-
     public async Task RefreshKnownItemsAsync(CancellationToken cancellationToken = default)
     {
         try
@@ -229,6 +178,57 @@ public sealed class MetadataRefreshService
             logger.LogError(ex, "刷新已知物品元数据时发生错误");
             throw;
         }
+    }
+
+    private static GachaEventInfo ConvertToEntity(GachaEventJson json)
+    {
+        var entity = new GachaEventInfo
+        {
+            Version = json.Version,
+            Name = json.Name,
+            Locale = "CHS",
+            Order = (uint)json.Order,
+            From = DateTime.Parse(json.From),
+            To = DateTime.Parse(json.To),
+            Type = (GachaConfigType)json.Type,
+        };
+
+        for (int i = 0; i < Math.Min(json.UpOrangeList.Count, 16); i++)
+        {
+            switch (i)
+            {
+                case 0: entity.UpOrangeItem1 = (uint)json.UpOrangeList[i]; break;
+                case 1: entity.UpOrangeItem2 = (uint)json.UpOrangeList[i]; break;
+                case 2: entity.UpOrangeItem3 = (uint)json.UpOrangeList[i]; break;
+                case 3: entity.UpOrangeItem4 = (uint)json.UpOrangeList[i]; break;
+                case 4: entity.UpOrangeItem5 = (uint)json.UpOrangeList[i]; break;
+                case 5: entity.UpOrangeItem6 = (uint)json.UpOrangeList[i]; break;
+                case 6: entity.UpOrangeItem7 = (uint)json.UpOrangeList[i]; break;
+                case 7: entity.UpOrangeItem8 = (uint)json.UpOrangeList[i]; break;
+                case 8: entity.UpOrangeItem9 = (uint)json.UpOrangeList[i]; break;
+                case 9: entity.UpOrangeItem10 = (uint)json.UpOrangeList[i]; break;
+                case 10: entity.UpOrangeItem11 = (uint)json.UpOrangeList[i]; break;
+                case 11: entity.UpOrangeItem12 = (uint)json.UpOrangeList[i]; break;
+                case 12: entity.UpOrangeItem13 = (uint)json.UpOrangeList[i]; break;
+                case 13: entity.UpOrangeItem14 = (uint)json.UpOrangeList[i]; break;
+                case 14: entity.UpOrangeItem15 = (uint)json.UpOrangeList[i]; break;
+                case 15: entity.UpOrangeItem16 = (uint)json.UpOrangeList[i]; break;
+            }
+        }
+
+        for (int i = 0; i < Math.Min(json.UpPurpleList.Count, 5); i++)
+        {
+            switch (i)
+            {
+                case 0: entity.UpPurpleItem1 = (uint)json.UpPurpleList[i]; break;
+                case 1: entity.UpPurpleItem2 = (uint)json.UpPurpleList[i]; break;
+                case 2: entity.UpPurpleItem3 = (uint)json.UpPurpleList[i]; break;
+                case 3: entity.UpPurpleItem4 = (uint)json.UpPurpleList[i]; break;
+                case 4: entity.UpPurpleItem5 = (uint)json.UpPurpleList[i]; break;
+            }
+        }
+
+        return entity;
     }
 
     private static void AddKnownItems(List<KnownItem> knownItems, JArray? array)

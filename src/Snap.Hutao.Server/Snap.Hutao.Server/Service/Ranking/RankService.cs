@@ -11,7 +11,7 @@ using StackExchange.Redis;
 namespace Snap.Hutao.Server.Service.Ranking;
 
 // Singleton
-internal sealed class RankService : IRankService, IDisposable
+public sealed class RankService : IRankService, IDisposable
 {
     private readonly IServiceScopeFactory scopeFactory;
     private readonly ConnectionMultiplexer redis;

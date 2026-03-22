@@ -9,7 +9,7 @@ namespace Snap.Hutao.Server.Model.Context.Configuration;
 /// Json文本转换器
 /// </summary>
 /// <typeparam name="TProperty">实体类型</typeparam>
-internal class JsonTextValueConverter<TProperty> : ValueConverter<TProperty, string>
+public class JsonTextValueConverter<TProperty> : ValueConverter<TProperty, string>
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="JsonTextValueConverter{TProperty}"/> class.

@@ -5,7 +5,7 @@ using Snap.Hutao.Server.Model.Metadata;
 
 namespace Snap.Hutao.Server.Service.GachaLog.Statistics;
 
-internal sealed class GachaEventBundle
+public sealed class GachaEventBundle
 {
     public GachaEventInfo? AvatarEvent1 { get; set; } = default!;
 

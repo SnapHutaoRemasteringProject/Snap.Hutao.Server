@@ -3,7 +3,7 @@
 
 namespace Snap.Hutao.Server.Service.Legacy.PizzaHelper;
 
-internal sealed class SubmitDetailModel
+public sealed class SubmitDetailModel
 {
     [JsonPropertyName("floor")]
     public int Floor { get; set; }

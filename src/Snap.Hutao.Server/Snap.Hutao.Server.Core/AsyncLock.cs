@@ -3,7 +3,7 @@
 
 namespace Snap.Hutao.Server.Core;
 
-internal sealed class AsyncLock
+public sealed class AsyncLock
 {
     private static readonly Func<Task, object?, Releaser> Continuation = RunContinuation;
 
@@ -28,11 +28,11 @@ internal sealed class AsyncLock
         return new((AsyncLock)state);
     }
 
-    internal readonly struct Releaser : IDisposable
+    public readonly struct Releaser : IDisposable
     {
         private readonly AsyncLock toRelease;
 
-        internal Releaser(AsyncLock toRelease)
+        public Releaser(AsyncLock toRelease)
         {
             this.toRelease = toRelease;
         }

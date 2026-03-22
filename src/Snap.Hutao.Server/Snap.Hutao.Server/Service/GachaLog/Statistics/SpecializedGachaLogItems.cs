@@ -6,7 +6,7 @@ using Snap.Hutao.Server.Model.Metadata;
 
 namespace Snap.Hutao.Server.Service.GachaLog.Statistics;
 
-internal static class SpecializedGachaLogItems
+public static class SpecializedGachaLogItems
 {
     // 10000003 琴
     // 10000016 迪卢克

@@ -3,7 +3,7 @@
 
 namespace Snap.Hutao.Server.Controller;
 
-internal static class ClientExtension
+public static class ClientExtension
 {
     private const string SnapHutaoClientHeaderPrefix = "Snap Hutao/";
 

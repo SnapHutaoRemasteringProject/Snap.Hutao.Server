@@ -1,9 +1,9 @@
 ﻿// Copyright (c) DGP Studio. All rights reserved.
 // Licensed under the MIT license.
 
-using Snap.Hutao.Server.Service.OAuth;
-
 namespace Snap.Hutao.Server.Model.Entity.Passport;
+
+using Snap.Hutao.Server.Service.OAuth;
 
 public class OAuthBindIdentity
 {

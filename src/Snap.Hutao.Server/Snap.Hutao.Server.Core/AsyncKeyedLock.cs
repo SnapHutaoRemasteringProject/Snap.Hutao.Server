@@ -5,7 +5,7 @@ using System.Collections.Concurrent;
 
 namespace Snap.Hutao.Server.Core;
 
-internal sealed class AsyncKeyedLock<TKey>
+public sealed class AsyncKeyedLock<TKey>
     where TKey : notnull
 {
     private static readonly Func<Task, object?, Releaser> Continuation = RunContinuation;
@@ -48,11 +48,11 @@ internal sealed class AsyncKeyedLock<TKey>
         return new((State)state);
     }
 
-    internal readonly struct Releaser : IDisposable
+    public readonly struct Releaser : IDisposable
     {
         private readonly State state;
 
-        internal Releaser(State state)
+        public Releaser(State state)
         {
             this.state = state;
         }
@@ -73,7 +73,7 @@ internal sealed class AsyncKeyedLock<TKey>
         }
     }
 
-    internal sealed class State
+    public sealed class State
     {
         public State(AsyncKeyedLock<TKey> toRelease, TKey key)
         {

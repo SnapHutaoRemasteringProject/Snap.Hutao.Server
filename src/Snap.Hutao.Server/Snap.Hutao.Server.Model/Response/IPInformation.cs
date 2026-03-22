@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 
 namespace Snap.Hutao.Server.Model.Response;
 
-internal sealed partial class IPInformation
+public sealed partial class IPInformation
 {
     private const string Unknown = "Unknown";
 

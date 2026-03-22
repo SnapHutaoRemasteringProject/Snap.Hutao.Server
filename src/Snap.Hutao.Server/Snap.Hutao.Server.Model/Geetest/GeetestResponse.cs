@@ -3,7 +3,7 @@
 
 namespace Snap.Hutao.Server.Model.Geetest;
 
-internal sealed class GeetestResponse
+public sealed class GeetestResponse
 {
     [JsonPropertyName("code")]
     public int Code { get; set; }

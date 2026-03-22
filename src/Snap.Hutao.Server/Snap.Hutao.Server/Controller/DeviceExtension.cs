@@ -5,7 +5,7 @@ using Snap.Hutao.Server.Model.Passport;
 
 namespace Snap.Hutao.Server.Controller;
 
-internal static class DeviceExtension
+public static class DeviceExtension
 {
     private const string HutaoDeviceIdHeader = "x-hutao-device-id";
     private const string HutaoDeviceNameHeader = "x-hutao-device-name";

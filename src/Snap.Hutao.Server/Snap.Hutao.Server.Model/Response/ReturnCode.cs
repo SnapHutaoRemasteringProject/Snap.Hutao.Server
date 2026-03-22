@@ -9,8 +9,8 @@ namespace Snap.Hutao.Server.Model.Response;
 // X: 1 - Invalid Request
 //    2 - Request Frequency
 //    3 - Limitation for User
-//    4 - Internal Waiting
-//    5 - Internal Exception
+//    4 - public Waiting
+//    5 - public Exception
 // Y: 1 - General
 //    2 - SpiralAbyss Statistics
 //    3 - GachaLog Service

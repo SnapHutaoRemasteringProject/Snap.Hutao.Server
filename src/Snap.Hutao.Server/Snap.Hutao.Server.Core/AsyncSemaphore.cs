@@ -3,7 +3,7 @@
 
 namespace Snap.Hutao.Server.Core;
 
-internal sealed class AsyncSemaphore
+public sealed class AsyncSemaphore
 {
     private readonly Queue<TaskCompletionSource> waiters = [];
     private readonly int maxCount;

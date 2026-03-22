@@ -3,7 +3,7 @@
 
 namespace Snap.Hutao.Server.Service.Legacy.PizzaHelper;
 
-internal sealed class AbyssRankModel
+public sealed class AbyssRankModel
 {
     [JsonPropertyName("topDamageValue")]
     public int TopDamageValue { get; set; }

@@ -8,7 +8,7 @@ namespace Snap.Hutao.Server.Service.Legacy.Primitive;
 /// </summary>
 public static class Maps
 {
-    internal static Map<Constellation, int> ForConstellation(AvatarId avatarId)
+    public static Map<Constellation, int> ForConstellation(AvatarId avatarId)
     {
         _ = avatarId;
         return new()

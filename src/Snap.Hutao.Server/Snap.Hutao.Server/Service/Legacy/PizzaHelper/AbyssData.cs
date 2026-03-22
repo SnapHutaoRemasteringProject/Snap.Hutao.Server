@@ -3,7 +3,7 @@
 
 namespace Snap.Hutao.Server.Service.Legacy.PizzaHelper;
 
-internal sealed class AbyssData
+public sealed class AbyssData
 {
     [JsonPropertyName("submitId")]
     public Guid SubmitId { get; } = Guid.NewGuid();

@@ -36,7 +36,7 @@ public class Map<TKey, TValue> : Dictionary<TKey, TValue>
     /// <param name="key">键</param>
     /// <param name="valueFactory">值工厂</param>
     /// <returns>值</returns>
-    internal TValue GetOrAdd(TKey key, Func<TKey, TValue> valueFactory)
+    public TValue GetOrAdd(TKey key, Func<TKey, TValue> valueFactory)
     {
         if (!TryGetValue(key, out TValue? value))
         {
@@ -52,7 +52,7 @@ public class Map<TKey, TValue> : Dictionary<TKey, TValue>
     /// </summary>
     /// <param name="key">键</param>
     /// <returns>值</returns>
-    internal TValue GetOrNew(TKey key)
+    public TValue GetOrNew(TKey key)
     {
         if (!TryGetValue(key, out TValue? value))
         {

@@ -3,7 +3,7 @@
 
 namespace Snap.Hutao.Server.Option;
 
-internal static class AppOptionsExtension
+public static class AppOptionsExtension
 {
     public static SymmetricSecurityKey GetJwtSecurityKey(this AppOptions options)
     {
