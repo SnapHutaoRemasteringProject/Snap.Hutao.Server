@@ -19,34 +19,32 @@ public sealed class CdnExpireService : IExpireService
 
     public async ValueTask<TermExtendResult> ExtendTermForUserNameAsync(string userName, int days)
     {
-        using (IServiceScope scope = serviceProvider.CreateScope())
+        using IServiceScope scope = serviceProvider.CreateScope();
+        UserManager<HutaoUser> userManager = scope.ServiceProvider.GetRequiredService<UserManager<HutaoUser>>();
+
+        HutaoUser? user = await userManager.FindByNameAsync(userName).ConfigureAwait(false);
+
+        if (user == null)
         {
-            UserManager<HutaoUser> userManager = scope.ServiceProvider.GetRequiredService<UserManager<HutaoUser>>();
-
-            HutaoUser? user = await userManager.FindByNameAsync(userName).ConfigureAwait(false);
-
-            if (user == null)
-            {
-                return new(TermExtendResultKind.NoSuchUser);
-            }
-
-            long now = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
-            if (user.CdnExpireAt < now)
-            {
-                user.CdnExpireAt = now;
-            }
-
-            user.CdnExpireAt += (long)TimeSpan.FromDays(days).TotalSeconds;
-
-            IdentityResult result = await userManager.UpdateAsync(user).ConfigureAwait(false);
-
-            if (!result.Succeeded)
-            {
-                return new(TermExtendResultKind.DbError);
-            }
-
-            return new(TermExtendResultKind.Ok, DateTimeOffset.FromUnixTimeSeconds(user.CdnExpireAt));
+            return new(TermExtendResultKind.NoSuchUser);
         }
+
+        long now = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+        if (user.CdnExpireAt < now)
+        {
+            user.CdnExpireAt = now;
+        }
+
+        user.CdnExpireAt += (long)TimeSpan.FromDays(days).TotalSeconds;
+
+        IdentityResult result = await userManager.UpdateAsync(user).ConfigureAwait(false);
+
+        if (!result.Succeeded)
+        {
+            return new(TermExtendResultKind.DbError);
+        }
+
+        return new(TermExtendResultKind.Ok, DateTimeOffset.FromUnixTimeSeconds(user.CdnExpireAt));
     }
 
     public async ValueTask<TermExtendResult> ExtendTermForUserAsync(DbSet<HutaoUser> users, HutaoUser user, int days)

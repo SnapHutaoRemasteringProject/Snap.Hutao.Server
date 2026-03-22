@@ -19,34 +19,32 @@ public sealed class GachaLogExpireService : IExpireService
 
     public async ValueTask<TermExtendResult> ExtendTermForUserNameAsync(string userName, int days)
     {
-        using (IServiceScope scope = serviceProvider.CreateScope())
+        using IServiceScope scope = serviceProvider.CreateScope();
+        UserManager<HutaoUser> userManager = scope.ServiceProvider.GetRequiredService<UserManager<HutaoUser>>();
+
+        HutaoUser? user = await userManager.FindByNameAsync(userName).ConfigureAwait(false);
+
+        if (user == null)
         {
-            UserManager<HutaoUser> userManager = scope.ServiceProvider.GetRequiredService<UserManager<HutaoUser>>();
-
-            HutaoUser? user = await userManager.FindByNameAsync(userName).ConfigureAwait(false);
-
-            if (user == null)
-            {
-                return new(TermExtendResultKind.NoSuchUser);
-            }
-
-            long now = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
-            if (user.GachaLogExpireAt < now)
-            {
-                user.GachaLogExpireAt = now;
-            }
-
-            user.GachaLogExpireAt += (long)TimeSpan.FromDays(days).TotalSeconds;
-
-            IdentityResult result = await userManager.UpdateAsync(user).ConfigureAwait(false);
-
-            if (!result.Succeeded)
-            {
-                return new(TermExtendResultKind.DbError);
-            }
-
-            return new(TermExtendResultKind.Ok, DateTimeOffset.FromUnixTimeSeconds(user.GachaLogExpireAt));
+            return new(TermExtendResultKind.NoSuchUser);
         }
+
+        long now = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+        if (user.GachaLogExpireAt < now)
+        {
+            user.GachaLogExpireAt = now;
+        }
+
+        user.GachaLogExpireAt += (long)TimeSpan.FromDays(days).TotalSeconds;
+
+        IdentityResult result = await userManager.UpdateAsync(user).ConfigureAwait(false);
+
+        if (!result.Succeeded)
+        {
+            return new(TermExtendResultKind.DbError);
+        }
+
+        return new(TermExtendResultKind.Ok, DateTimeOffset.FromUnixTimeSeconds(user.GachaLogExpireAt));
     }
 
     public async ValueTask<TermExtendResult> ExtendTermForUserAsync(DbSet<HutaoUser> users, HutaoUser user, int days)

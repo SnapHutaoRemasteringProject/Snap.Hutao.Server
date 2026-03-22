@@ -298,36 +298,34 @@ public sealed class MetadataRefreshService
         else
         {
             // We need to ensure local repo is up to date
-            using (Repository repo = new(directory))
+            using Repository repo = new(directory);
+            Configuration config = repo.Config;
+            config.Set("core.longpaths", true);
+            config.Set("safe.directory", true);
+            if (string.IsNullOrEmpty(fetchOptions.ProxyOptions.Url))
             {
-                Configuration config = repo.Config;
-                config.Set("core.longpaths", true);
-                config.Set("safe.directory", true);
-                if (string.IsNullOrEmpty(fetchOptions.ProxyOptions.Url))
-                {
-                    config.Unset("http.proxy");
-                    config.Unset("https.proxy");
-                }
-                else
-                {
-                    config.Set("http.proxy", fetchOptions.ProxyOptions.Url);
-                    config.Set("https.proxy", fetchOptions.ProxyOptions.Url);
-                }
-
-                repo.Network.Remotes.Update("origin", remote => remote.Url = gitRepo.HttpsUrl);
-                repo.RemoveUntrackedFiles();
-                fetchOptions.UpdateFetchHead = false;
-                Commands.Fetch(repo, repo.Head.RemoteName, Array.Empty<string>(), fetchOptions, default);
-
-                // Manually patch .git/shallow file
-                File.WriteAllText(Path.Combine(directory, ".git//shallow"), string.Join("", repo.Branches.Where(static branch => branch.IsRemote).Select(static branch => $"{branch.Tip.Sha}\n")));
-
-                Branch remoteBranch = repo.Branches["origin/main"];
-                Branch localBranch = repo.Branches["main"] ?? repo.CreateBranch("main", remoteBranch.Tip);
-                repo.Branches.Update(localBranch, b => b.TrackedBranch = remoteBranch.CanonicalName);
-                repo.Reset(ResetMode.Hard, remoteBranch.Tip);
-                repo.RemoveUntrackedFiles();
+                config.Unset("http.proxy");
+                config.Unset("https.proxy");
             }
+            else
+            {
+                config.Set("http.proxy", fetchOptions.ProxyOptions.Url);
+                config.Set("https.proxy", fetchOptions.ProxyOptions.Url);
+            }
+
+            repo.Network.Remotes.Update("origin", remote => remote.Url = gitRepo.HttpsUrl);
+            repo.RemoveUntrackedFiles();
+            fetchOptions.UpdateFetchHead = false;
+            Commands.Fetch(repo, repo.Head.RemoteName, Array.Empty<string>(), fetchOptions, default);
+
+            // Manually patch .git/shallow file
+            File.WriteAllText(Path.Combine(directory, ".git//shallow"), string.Join("", repo.Branches.Where(static branch => branch.IsRemote).Select(static branch => $"{branch.Tip.Sha}\n")));
+
+            Branch remoteBranch = repo.Branches["origin/main"];
+            Branch localBranch = repo.Branches["main"] ?? repo.CreateBranch("main", remoteBranch.Tip);
+            repo.Branches.Update(localBranch, b => b.TrackedBranch = remoteBranch.CanonicalName);
+            repo.Reset(ResetMode.Hard, remoteBranch.Tip);
+            repo.RemoveUntrackedFiles();
         }
     }
 

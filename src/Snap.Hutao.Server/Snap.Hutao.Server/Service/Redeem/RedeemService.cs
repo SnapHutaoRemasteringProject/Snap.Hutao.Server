@@ -113,37 +113,35 @@ public sealed class RedeemService
 
     private async ValueTask<RedeemUseResponse> ExtendTermForUserByCodeAsync(HutaoUser user, RedeemCode code)
     {
-        using (IDbContextTransaction transaction = await appDbContext.Database.BeginTransactionAsync().ConfigureAwait(false))
+        using IDbContextTransaction transaction = await appDbContext.Database.BeginTransactionAsync().ConfigureAwait(false);
+        IExpireService expireService = code.ServiceType switch
         {
-            IExpireService expireService = code.ServiceType switch
-            {
-                RedeemCodeTargetServiceType.GachaLog => gachaLogExpireService,
-                RedeemCodeTargetServiceType.Cdn => cdnExpireService,
-                _ => throw new NotSupportedException(),
-            };
+            RedeemCodeTargetServiceType.GachaLog => gachaLogExpireService,
+            RedeemCodeTargetServiceType.Cdn => cdnExpireService,
+            _ => throw new NotSupportedException(),
+        };
 
-            TermExtendResult result = await expireService.ExtendTermForUserAsync(appDbContext.Users, user, code.Value).ConfigureAwait(false);
-            if (result.Kind is TermExtendResultKind.NoSuchUser)
-            {
-                return new(RedeemStatus.NoSuchUser);
-            }
-
-            if (result.Kind is TermExtendResultKind.DbError)
-            {
-                return new(RedeemStatus.DbError);
-            }
-
-            RedeemCodeUseItem useItem = new()
-            {
-                RedeemCodeId = code.Id,
-                UsedBy = user.Id,
-                UseTime = DateTimeOffset.UtcNow,
-            };
-
-            await appDbContext.RedeemCodeUseItems.AddAndSaveAsync(useItem);
-            await transaction.CommitAsync().ConfigureAwait(false);
-
-            return new(RedeemStatus.Ok, code.ServiceType, code.Value, result.ExpiredAt);
+        TermExtendResult result = await expireService.ExtendTermForUserAsync(appDbContext.Users, user, code.Value).ConfigureAwait(false);
+        if (result.Kind is TermExtendResultKind.NoSuchUser)
+        {
+            return new(RedeemStatus.NoSuchUser);
         }
+
+        if (result.Kind is TermExtendResultKind.DbError)
+        {
+            return new(RedeemStatus.DbError);
+        }
+
+        RedeemCodeUseItem useItem = new()
+        {
+            RedeemCodeId = code.Id,
+            UsedBy = user.Id,
+            UseTime = DateTimeOffset.UtcNow,
+        };
+
+        await appDbContext.RedeemCodeUseItems.AddAndSaveAsync(useItem);
+        await transaction.CommitAsync().ConfigureAwait(false);
+
+        return new(RedeemStatus.Ok, code.ServiceType, code.Value, result.ExpiredAt);
     }
 }

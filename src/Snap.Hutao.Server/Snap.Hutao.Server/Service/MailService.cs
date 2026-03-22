@@ -473,19 +473,17 @@ public sealed class MailService
 
     private async Task SendHttpMailAsync(MailOptions options)
     {
-        using (HttpClient httpClient = httpClientFactory.CreateClient())
+        using HttpClient httpClient = httpClientFactory.CreateClient();
+        MailData data = new()
         {
-            MailData data = new()
-            {
-                From = "DGP Studio <no-reply@snapgenshin.cn>",
-                To = options.Address,
-                Subject = options.Subject,
-                BodyHtml = ComposeMailBody(options),
-            };
+            From = "DGP Studio <no-reply@snapgenshin.cn>",
+            To = options.Address,
+            Subject = options.Subject,
+            BodyHtml = ComposeMailBody(options),
+        };
 
-            httpClient.DefaultRequestHeaders.Authorization = new("SECRET", mailerSecret);
-            await httpClient.PostAsJsonAsync("https://mailer.snapgenshin.cn/api/sendEmail", data).ConfigureAwait(false);
-        }
+        httpClient.DefaultRequestHeaders.Authorization = new("SECRET", mailerSecret);
+        await httpClient.PostAsJsonAsync("https://mailer.snapgenshin.cn/api/sendEmail", data).ConfigureAwait(false);
     }
 
     private async Task SendMimeMailAsync(MailOptions options)
@@ -507,14 +505,12 @@ public sealed class MailService
             },
         };
 
-        using (SmtpClient client = new())
-        {
-            client.ServerCertificateValidationCallback = (s, c, h, e) => true;
-            await client.ConnectAsync(smtpOptions.Server, 587, MailKit.Security.SecureSocketOptions.StartTls).ConfigureAwait(false);
-            await client.AuthenticateAsync(smtpOptions.UserName, smtpOptions.Password).ConfigureAwait(false);
-            await client.SendAsync(mimeMessage).ConfigureAwait(false);
-            await client.DisconnectAsync(true).ConfigureAwait(false);
-        }
+        using SmtpClient client = new();
+        client.ServerCertificateValidationCallback = (s, c, h, e) => true;
+        await client.ConnectAsync(smtpOptions.Server, 587, MailKit.Security.SecureSocketOptions.StartTls).ConfigureAwait(false);
+        await client.AuthenticateAsync(smtpOptions.UserName, smtpOptions.Password).ConfigureAwait(false);
+        await client.SendAsync(mimeMessage).ConfigureAwait(false);
+        await client.DisconnectAsync(true).ConfigureAwait(false);
     }
 
     private sealed class MailData

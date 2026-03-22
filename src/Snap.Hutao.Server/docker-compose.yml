@@ -15,13 +15,13 @@ services:
       - "host.docker.gateway:host-gateway"
     container_name: Homa-Server
     volumes:
-      - ./.env:/app/.env
+      - ./appsettings-homa.json:/app/appsettings.json
     restart: unless-stopped
     depends_on:
       - redis
 
   redis:
-    container_name: Homa-Server-Redis
+    container_name: Hutao-Server-Redis
     image: redis:latest
     volumes:
       - ./redis:/data

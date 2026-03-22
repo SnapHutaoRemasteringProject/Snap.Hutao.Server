@@ -307,84 +307,80 @@ public static class Program
 
     private static void MigrateDatabase(IHost app)
     {
-        using (IServiceScope scope = app.Services.CreateScope())
-        {
-            AppDbContext context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-            MetadataDbContext metadataDbContext = scope.ServiceProvider.GetRequiredService<MetadataDbContext>();
-            metadataDbContext.Database.EnsureCreated();
-            ILogger logger = scope.ServiceProvider.GetRequiredService<ILogger<IHost>>();
+        using IServiceScope scope = app.Services.CreateScope();
+        AppDbContext context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        MetadataDbContext metadataDbContext = scope.ServiceProvider.GetRequiredService<MetadataDbContext>();
+        metadataDbContext.Database.EnsureCreated();
+        ILogger logger = scope.ServiceProvider.GetRequiredService<ILogger<IHost>>();
 
-            if (context.Database.IsRelational())
+        if (context.Database.IsRelational())
+        {
+            try
             {
+                var pendingMigrations = context.Database.GetPendingMigrations().ToList();
+                if (pendingMigrations.Any())
+                {
+                    logger.LogInformation("发现 {Count} 个待应用的迁移: {Migrations}",
+                        pendingMigrations.Count, string.Join(", ", pendingMigrations));
+
+                    context.Database.SetCommandTimeout(TimeSpan.FromMinutes(10));
+                    context.Database.Migrate();
+                    logger.LogInformation("数据库迁移完成");
+                }
+                else
+                {
+                    logger.LogInformation("没有待应用的迁移");
+
+                    if (!context.Database.CanConnect())
+                    {
+                        logger.LogWarning("无法连接到数据库，尝试创建数据库...");
+                        context.Database.EnsureCreated();
+                        logger.LogInformation("数据库创建完成");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "数据库迁移/创建失败，尝试回退到 EnsureCreated");
+
                 try
                 {
-                    var pendingMigrations = context.Database.GetPendingMigrations().ToList();
-                    if (pendingMigrations.Any())
-                    {
-                        logger.LogInformation("发现 {Count} 个待应用的迁移: {Migrations}",
-                            pendingMigrations.Count, string.Join(", ", pendingMigrations));
-
-                        context.Database.SetCommandTimeout(TimeSpan.FromMinutes(10));
-                        context.Database.Migrate();
-                        logger.LogInformation("数据库迁移完成");
-                    }
-                    else
-                    {
-                        logger.LogInformation("没有待应用的迁移");
-
-                        if (!context.Database.CanConnect())
-                        {
-                            logger.LogWarning("无法连接到数据库，尝试创建数据库...");
-                            context.Database.EnsureCreated();
-                            logger.LogInformation("数据库创建完成");
-                        }
-                    }
+                    context.Database.EnsureCreated();
+                    logger.LogInformation("回退：数据库通过 EnsureCreated 创建完成");
                 }
-                catch (Exception ex)
+                catch (Exception ensureEx)
                 {
-                    logger.LogError(ex, "数据库迁移/创建失败，尝试回退到 EnsureCreated");
-
-                    try
-                    {
-                        context.Database.EnsureCreated();
-                        logger.LogInformation("回退：数据库通过 EnsureCreated 创建完成");
-                    }
-                    catch (Exception ensureEx)
-                    {
-                        logger.LogCritical(ensureEx, "数据库创建完全失败");
-                        throw;
-                    }
+                    logger.LogCritical(ensureEx, "数据库创建完全失败");
+                    throw;
                 }
             }
-            else
-            {
-                logger.LogWarning("数据库不是关系型数据库，跳过迁移");
-            }
+        }
+        else
+        {
+            logger.LogWarning("数据库不是关系型数据库，跳过迁移");
         }
     }
 
     private static void RefreshMetadataOnStartup(IHost app)
     {
-        using (IServiceScope scope = app.Services.CreateScope())
+        using IServiceScope scope = app.Services.CreateScope();
+        var logger = scope.ServiceProvider.GetRequiredService<ILogger<IHost>>();
+        var metadataRefreshService = scope.ServiceProvider.GetRequiredService<Snap.Hutao.Server.Service.Metadata.MetadataRefreshService>();
+        var statisticsService = scope.ServiceProvider.GetRequiredService<GachaLogStatisticsService>();
+
+        try
         {
-            var logger = scope.ServiceProvider.GetRequiredService<ILogger<IHost>>();
-            var metadataRefreshService = scope.ServiceProvider.GetRequiredService<Snap.Hutao.Server.Service.Metadata.MetadataRefreshService>();
-            var statisticsService = scope.ServiceProvider.GetRequiredService<GachaLogStatisticsService>();
+            logger.LogInformation("服务器启动时开始执行元数据刷新...");
 
-            try
-            {
-                logger.LogInformation("服务器启动时开始执行元数据刷新...");
+            metadataRefreshService.RefreshGachaEventsAsync().GetAwaiter().GetResult();
+            metadataRefreshService.RefreshKnownItemsAsync().GetAwaiter().GetResult();
+            Task.Run(async () => await statisticsService.RunAsync()).Wait();
 
-                metadataRefreshService.RefreshGachaEventsAsync().GetAwaiter().GetResult();
-                metadataRefreshService.RefreshKnownItemsAsync().GetAwaiter().GetResult();
-                Task.Run(async () => await statisticsService.RunAsync()).Wait();
-
-                logger.LogInformation("服务器启动时元数据刷新完成");
-            }
-            catch (Exception ex)
-            {
-                logger.LogError(ex, "服务器启动时元数据刷新失败");
-            }
+            logger.LogInformation("服务器启动时元数据刷新完成");
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "服务器启动时元数据刷新失败");
         }
     }
 }

@@ -105,56 +105,40 @@ public class OAuthController : ControllerBase
 
     private string EncryptState(string state)
     {
-        using (Aes aes = Aes.Create())
+        using Aes aes = Aes.Create();
+        aes.Key = appOptions.OAuthStateEncryptKey;
+        aes.IV = new byte[16];
+        aes.Mode = CipherMode.CBC;
+        aes.Padding = PaddingMode.PKCS7;
+
+        using MemoryStream targetStream = new();
+        using (ICryptoTransform transform = aes.CreateEncryptor())
         {
-            aes.Key = appOptions.OAuthStateEncryptKey;
-            aes.IV = new byte[16];
-            aes.Mode = CipherMode.CBC;
-            aes.Padding = PaddingMode.PKCS7;
-
-            using (MemoryStream targetStream = new())
+            using CryptoStream cryptoStream = new(targetStream, transform, CryptoStreamMode.Write);
+            using (StreamWriter streamWriter = new(cryptoStream, leaveOpen: true))
             {
-                using (ICryptoTransform transform = aes.CreateEncryptor())
-                {
-                    using (CryptoStream cryptoStream = new(targetStream, transform, CryptoStreamMode.Write))
-                    {
-                        using (StreamWriter streamWriter = new(cryptoStream, leaveOpen: true))
-                        {
-                            streamWriter.Write(state);
-                            streamWriter.Flush();
-                        }
-
-                        cryptoStream.FlushFinalBlock();
-                    }
-                }
-
-                return Convert.ToBase64String(targetStream.ToArray());
+                streamWriter.Write(state);
+                streamWriter.Flush();
             }
+
+            cryptoStream.FlushFinalBlock();
         }
+
+        return Convert.ToBase64String(targetStream.ToArray());
     }
 
     private string DecryptState(string state)
     {
-        using (Aes aes = Aes.Create())
-        {
-            aes.Key = appOptions.OAuthStateEncryptKey;
-            aes.IV = new byte[16];
-            aes.Mode = CipherMode.CBC;
-            aes.Padding = PaddingMode.PKCS7;
+        using Aes aes = Aes.Create();
+        aes.Key = appOptions.OAuthStateEncryptKey;
+        aes.IV = new byte[16];
+        aes.Mode = CipherMode.CBC;
+        aes.Padding = PaddingMode.PKCS7;
 
-            using (MemoryStream sourceStream = new(Convert.FromBase64String(state)))
-            {
-                using (ICryptoTransform transform = aes.CreateDecryptor())
-                {
-                    using (CryptoStream cryptoStream = new(sourceStream, transform, CryptoStreamMode.Read))
-                    {
-                        using (StreamReader streamReader = new(cryptoStream, leaveOpen: true))
-                        {
-                            return streamReader.ReadToEnd();
-                        }
-                    }
-                }
-            }
-        }
+        using MemoryStream sourceStream = new(Convert.FromBase64String(state));
+        using ICryptoTransform transform = aes.CreateDecryptor();
+        using CryptoStream cryptoStream = new(sourceStream, transform, CryptoStreamMode.Read);
+        using StreamReader streamReader = new(cryptoStream, leaveOpen: true);
+        return streamReader.ReadToEnd();
     }
 }
