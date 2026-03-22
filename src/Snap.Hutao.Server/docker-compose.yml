@@ -36,6 +36,7 @@ services:
     restart: unless-stopped
     depends_on:
       - redis
+      - homa-server
 
   redis:
     container_name: Hutao-Server-Redis
