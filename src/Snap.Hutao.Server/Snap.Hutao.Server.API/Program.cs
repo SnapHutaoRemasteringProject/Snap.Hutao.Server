@@ -11,6 +11,7 @@ using Snap.Hutao.Server.API.Option;
 using Snap.Hutao.Server.Model.Context;
 using Snap.Hutao.Server.Model.Entity.Passport;
 using Snap.Hutao.Server.Model.Response;
+using System.Net;
 
 namespace Snap.Hutao.Server.API;
 
@@ -157,11 +158,7 @@ public static class Program
         app.UseForwardedHeaders(new ForwardedHeadersOptions
         {
             ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto,
-            // 信任nginx代理服务器IP
-            KnownProxies = { IPAddress.Parse("103.236.69.23") },
-            // 如果需要信任所有代理（在生产环境中谨慎使用）
-            // ForwardLimit = null,
-            // KnownNetworks = { new IPNetwork(IPAddress.Parse("103.236.69.0"), 24) },
+            KnownProxies = { IPAddress.Parse("156.238.234.239") },
         });
 
         // Routes

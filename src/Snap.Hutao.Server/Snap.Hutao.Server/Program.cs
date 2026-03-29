@@ -38,6 +38,7 @@ using Snap.Hutao.Server.Service.RoleCombat;
 using Snap.Hutao.Server.Service.Sentry;
 using Snap.Hutao.Server.Service.Telemetry;
 using Swashbuckle.AspNetCore.SwaggerUI;
+using System.Net;
 
 namespace Snap.Hutao.Server;
 
@@ -269,6 +270,7 @@ public static class Program
         app.UseForwardedHeaders(new ForwardedHeadersOptions
         {
             ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto,
+            KnownProxies = { IPAddress.Parse("156.238.234.239") },
         });
 
         // Routes
