@@ -7,8 +7,8 @@ ENV TZ="Asia/Shanghai"
 
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
-COPY ["Snap.Hutao.Server/Snap.Hutao.Server.csproj", "Snap.Hutao.Server/"]
-RUN dotnet restore "Snap.Hutao.Server/Snap.Hutao.Server.csproj"
+COPY ["Snap.Hutao.Server.csproj", ""]
+RUN dotnet restore "Snap.Hutao.Server.csproj"
 COPY . .
 WORKDIR "/src/Snap.Hutao.Server"
 RUN dotnet build "Snap.Hutao.Server.csproj" -c Release -o /app/build

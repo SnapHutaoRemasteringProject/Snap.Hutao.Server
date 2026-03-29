@@ -4,7 +4,7 @@ services:
   homa-server:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Snap.Hutao.Server/Dockerfile
       target: final
     image: homa-server:latest
     ports:
@@ -22,7 +22,7 @@ services:
   api-server:
     build:
       context: .
-      dockerfile: APIDockerfile
+      dockerfile: Snap.Hutao.Server.API/Dockerfile
       target: final
     image: api-server:latest
     ports:
