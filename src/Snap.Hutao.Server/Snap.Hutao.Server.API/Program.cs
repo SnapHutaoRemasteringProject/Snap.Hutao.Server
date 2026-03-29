@@ -158,7 +158,11 @@ public static class Program
         app.UseForwardedHeaders(new ForwardedHeadersOptions
         {
             ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto,
-            KnownProxies = { IPAddress.Parse("156.238.234.239") },
+            KnownProxies =
+            {
+                IPAddress.Parse("156.238.234.239"),
+                IPAddress.Parse("::ffff:156.238.234.239"),
+            },
         });
 
         // Routes
