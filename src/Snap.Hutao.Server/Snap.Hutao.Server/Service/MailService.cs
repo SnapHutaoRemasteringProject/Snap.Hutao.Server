@@ -493,7 +493,7 @@ public sealed class MailService
             Subject = options.Subject,
             From =
             {
-                new MailboxAddress("Homa", smtpOptions.DiagnosticEmailAddress),
+                new MailboxAddress("Homa", smtpOptions.EmailAddress),
             },
             To =
             {
