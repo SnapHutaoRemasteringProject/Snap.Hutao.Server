@@ -11,4 +11,11 @@ public enum GachaConfigType
     ActivityWeapon = 302,
     SpeicalActivityAvatar = 400,
     ActivityCity = 500,
+
+    UGCStandard = 1000,
+    UGCAvatarEventWish = 2000,
+    UGCActivityAvatarMaleOne = 20011,
+    UGCActivityAvatarMaleTwo = 20012,
+    UGCActivityAvatarFemaleOne = 20021,
+    UGCActivityAvatarFemaleTwo = 20022,
 }

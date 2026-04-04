@@ -14,6 +14,12 @@ public sealed class EndIds : Dictionary<string, long>
         GachaConfigType.ActivityAvatar,
         GachaConfigType.ActivityWeapon,
         GachaConfigType.ActivityCity,
+        GachaConfigType.UGCStandard,
+        GachaConfigType.UGCAvatarEventWish,
+        GachaConfigType.UGCActivityAvatarMaleOne,
+        GachaConfigType.UGCActivityAvatarMaleTwo,
+        GachaConfigType.UGCActivityAvatarFemaleOne,
+        GachaConfigType.UGCActivityAvatarFemaleTwo,
     ]);
 
     public void Add(GachaConfigType type, long id)
