@@ -27,11 +27,11 @@ public class WallpaperController : ControllerBase
         string url = $"{upstreamUrl}hoyoplay";
         Response<Wallpaper> response = await httpClient.GetFromJsonAsync<Response<Wallpaper>>(url) ?? throw new InvalidOperationException("Failed to fetch wallpaper data.");
 
-        if (!dbContext.Wallpapers.Any(w => w.SourceUrl == response.Data!.SourceUrl))
+        if (!dbContext.Wallpapers.Any(w => w.Url == response.Data!.Url))
         {
             dbContext.Wallpapers.Add(new()
             {
-                Url = response.Data!.SourceUrl,
+                Url = response.Data!.Url,
                 SourceUrl = response.Data!.SourceUrl,
                 Author = response.Data!.Author,
                 Uploader = response.Data!.Uploader,
@@ -50,11 +50,11 @@ public class WallpaperController : ControllerBase
         string url = $"{upstreamUrl}bing";
         Response<Wallpaper> response = await httpClient.GetFromJsonAsync<Response<Wallpaper>>(url) ?? throw new InvalidOperationException("Failed to fetch wallpaper data.");
 
-        if (!dbContext.Wallpapers.Any(w => w.SourceUrl == response.Data!.SourceUrl))
+        if (!dbContext.Wallpapers.Any(w => w.Url == response.Data!.Url))
         {
             dbContext.Wallpapers.Add(new()
             {
-                Url = response.Data!.SourceUrl,
+                Url = response.Data!.Url,
                 SourceUrl = response.Data!.SourceUrl,
                 Author = response.Data!.Author,
                 Uploader = response.Data!.Uploader,
@@ -73,11 +73,11 @@ public class WallpaperController : ControllerBase
         string url = $"{upstreamUrl}today";
         Response<Wallpaper> response = await httpClient.GetFromJsonAsync<Response<Wallpaper>>(url) ?? throw new InvalidOperationException("Failed to fetch wallpaper data.");
 
-        if (!dbContext.Wallpapers.Any(w => w.SourceUrl == response.Data!.SourceUrl))
+        if (!dbContext.Wallpapers.Any(w => w.Url == response.Data!.Url))
         {
             dbContext.Wallpapers.Add(new()
             {
-                Url = response.Data!.SourceUrl,
+                Url = response.Data!.Url,
                 SourceUrl = response.Data!.SourceUrl,
                 Author = response.Data!.Author,
                 Uploader = response.Data!.Uploader,
