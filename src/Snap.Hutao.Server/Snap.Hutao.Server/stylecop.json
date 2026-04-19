@@ -2,7 +2,7 @@
   "$schema": "https://raw.githubusercontent.com/DotNetAnalyzers/StyleCopAnalyzers/master/StyleCop.Analyzers/StyleCop.Analyzers/Settings/stylecop.schema.json",
   "settings": {
     "documentationRules": {
-      "companyName": "DGP Studio",
+      "companyName": "Snap.HutaoRemasteringProject",
       "copyrightText": "Copyright (c) {companyName}. All rights reserved.\nLicensed under the {licenseName} license.",
       "xmlHeader": false,
       "variables": {

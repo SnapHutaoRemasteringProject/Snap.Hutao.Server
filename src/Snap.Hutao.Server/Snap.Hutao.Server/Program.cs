@@ -108,6 +108,7 @@ public static class Program
                 config.ScheduleJob<RoleCombatStatisticsRefreshJob>(t => t.StartNow().WithCronSchedule("0 10 */1 * * ?"));
                 config.ScheduleJob<RoleCombatRecordCleanJob>(t => t.StartNow().WithCronSchedule("0 0 4 1 * ?"));
                 config.ScheduleJob<MetadataRefreshJob>(t => t.StartNow().WithCronSchedule("0 */30 * * * ?"));
+                config.ScheduleJob<FufuUidBanRefreshJob>(t => t.StartNow().WithCronSchedule("0 30 */1 * * ?"));
             })
             .AddQuartzServer(options => options.WaitForJobsToComplete = true)
             .AddResponseCompression()
@@ -311,8 +312,6 @@ public static class Program
 
         // Endpoint
         app.MapControllers();
-
-        RefreshMetadataOnStartup(app);
 
         app.Run();
     }
