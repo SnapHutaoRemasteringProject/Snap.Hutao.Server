@@ -26,7 +26,7 @@ public class FufuUidBanRefreshJob : IJob
 
     public async Task Execute(IJobExecutionContext context)
     {
-        FufuOptions fufuOptions = appOptions.FufuOptions;
+        FufuOptions fufuOptions = appOptions.Fufu;
 
         HttpRequestMessage request = new(HttpMethod.Get, fufuOptions.UidBanQueryUri);
         HttpResponseMessage response = await httpClient.SendAsync(request);
