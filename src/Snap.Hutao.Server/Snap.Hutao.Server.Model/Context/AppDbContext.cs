@@ -15,6 +15,7 @@ using Snap.Hutao.Server.Model.Entity.RoleCombat;
 using Snap.Hutao.Server.Model.Entity.SpiralAbyss;
 using Snap.Hutao.Server.Model.Entity.Telemetry;
 using Snap.Hutao.Server.Model.Entity.Unlocker;
+using Snap.Hutao.Server.Model.Wallpaper;
 
 public sealed class AppDbContext : IdentityDbContext<HutaoUser, IdentityRole<int>, int>
 {
@@ -97,6 +98,8 @@ public sealed class AppDbContext : IdentityDbContext<HutaoUser, IdentityRole<int
     public DbSet<GitRepository> GitRepositories { get; set; } = default!;
 
     public DbSet<UnlockerBanned> UnlockerBanned { get; set; } = default!;
+
+    public DbSet<WallpaperData> Wallpapers { get; set; } = default!;
 
     public DbSet<HutaoPackageInformation> HutaoPackageInformations { get; set; } = default!;
     #endregion
