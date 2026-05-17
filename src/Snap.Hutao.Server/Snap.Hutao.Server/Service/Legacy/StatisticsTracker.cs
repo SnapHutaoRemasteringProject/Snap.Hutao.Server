@@ -86,7 +86,8 @@ public class StatisticsTracker
         foreach (ref readonly EntityAvatar avatar in CollectionsMarshal.AsSpan(record.Avatars))
         {
             // 在循环中顺便填充了 Id -> Entity 映射
-            holdingAvatarMap.Add(avatar.AvatarId, avatar);
+            // 同一位角色可能出现在多个队伍中，避免重复添加导致异常
+            holdingAvatarMap.TryAdd(avatar.AvatarId, avatar);
 
             // 递增角色持有数
             avatarHoldingCounter.IncreaseOne(avatar.AvatarId);
