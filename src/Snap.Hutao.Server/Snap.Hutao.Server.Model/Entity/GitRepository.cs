@@ -1,4 +1,4 @@
-// Copyright (c) DGP Studio. All rights reserved.
+﻿// Copyright (c) DGP Studio. All rights reserved.
 // Licensed under the MIT license.
 
 using System.ComponentModel.DataAnnotations.Schema;
@@ -13,6 +13,9 @@ public class GitRepository
 
     [JsonPropertyName("name")]
     public string Name { get; set; } = default!;
+
+    [JsonPropertyName("friendly_name")]
+    public string FriendlyName { get; set; } = default!;
 
     [JsonPropertyName("https_url")]
     public string HttpsUrl { get; set; } = default!;
