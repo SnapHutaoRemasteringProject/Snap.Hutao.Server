@@ -270,10 +270,12 @@ public static class Program
 
         IPHostEntry hostDockerInternal = Dns.GetHostEntry("host.docker.internal");
         IPAddress dockerGatewayIp = hostDockerInternal.AddressList.FirstOrDefault(ip => ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)!;
+        IPAddress dockerGatewayIpMapped = dockerGatewayIp.MapToIPv6();
         app.UseForwardedHeaders(new ForwardedHeadersOptions
         {
             ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto,
-            KnownProxies = { dockerGatewayIp },
+            ForwardLimit = 2,
+            KnownProxies = { dockerGatewayIp, dockerGatewayIpMapped },
         });
 
         // Routes
