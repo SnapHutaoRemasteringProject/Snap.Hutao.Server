@@ -268,9 +268,12 @@ public static class Program
         });
         app.UseStaticFiles();
 
+        IPHostEntry hostDockerInternal = Dns.GetHostEntry("host.docker.internal");
+        IPAddress dockerGatewayIp = hostDockerInternal.AddressList.FirstOrDefault(ip => ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)!;
         app.UseForwardedHeaders(new ForwardedHeadersOptions
         {
             ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto,
+            KnownProxies = { dockerGatewayIp },
         });
 
         // Routes

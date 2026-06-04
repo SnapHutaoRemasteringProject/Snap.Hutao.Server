@@ -3,6 +3,7 @@
 
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.Extensions.Options;
 using Quartz;
 using Quartz.AspNetCore;
 using Quartz.Simpl;
@@ -155,9 +156,12 @@ public static class Program
         });
         app.UseStaticFiles();
 
+        IPHostEntry hostDockerInternal = Dns.GetHostEntry("host.docker.internal");
+        IPAddress dockerGatewayIp = hostDockerInternal.AddressList.FirstOrDefault(ip => ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)!;
         app.UseForwardedHeaders(new ForwardedHeadersOptions
         {
             ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto,
+            KnownProxies = { dockerGatewayIp },
         });
 
         // Routes
