@@ -10,7 +10,8 @@ services:
     ports:
       - "5076:80"
     extra_hosts:
-      - "host.docker.internal:172.27.0.1"
+      - "host.docker.internal:172.17.0.1"
+      - "host.docker.nginx:172.18.0.1"
       - "host.docker.gateway:host-gateway"
     container_name: Homa-Server
     volumes:
@@ -28,7 +29,8 @@ services:
     ports:
       - "5077:80"
     extra_hosts:
-      - "host.docker.internal:172.27.0.1"
+      - "host.docker.internal:172.17.0.1"
+      - "host.docker.nginx:172.18.0.1"
       - "host.docker.gateway:host-gateway"
     container_name: API-Server
     volumes:
