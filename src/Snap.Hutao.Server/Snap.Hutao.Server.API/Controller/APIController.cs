@@ -6,6 +6,7 @@ using Snap.Hutao.Server.Model.Entity;
 using Snap.Hutao.Server.Model.Entity.Unlocker;
 using Snap.Hutao.Server.Model.Response;
 using Snap.Hutao.Server.Model.Static;
+using Snap.Hutao.Server.API.Option;
 
 namespace Snap.Hutao.Server.API.Controller;
 
@@ -14,11 +15,13 @@ namespace Snap.Hutao.Server.API.Controller;
 [ApiExplorerSettings(GroupName = "Misc")]
 public class APIController : ControllerBase, IDisposable
 {
+    private readonly AppOptions appOptions;
     private readonly AppDbContext appDbContext;
     private readonly HttpClient httpClient;
 
-    public APIController(AppDbContext appDbContext)
+    public APIController(AppOptions appOptions, AppDbContext appDbContext)
     {
+        this.appOptions = appOptions;
         this.appDbContext = appDbContext;
         httpClient = new HttpClient();
     }
@@ -48,8 +51,7 @@ public class APIController : ControllerBase, IDisposable
     [HttpGet("static/raw/{category}/{fileName}")]
     public IActionResult GetImage(string category, string fileName)
     {
-        string baseUrl = "https://static.snaphutaorp.org/static/raw";
-        return Redirect($"{baseUrl}/{category}/{fileName}");
+        return Redirect($"{appOptions.StaticRawBaseUrl}/{category}/{fileName}");
     }
 
     [HttpGet("static/size")]

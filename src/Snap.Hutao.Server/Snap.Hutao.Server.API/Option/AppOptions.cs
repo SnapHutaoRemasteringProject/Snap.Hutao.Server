@@ -12,4 +12,6 @@ public sealed class AppOptions
     public string JwtRaw { get; set; } = default!;
 
     public string RedisAddress { get; set; } = default!;
+
+    public string StaticRawBaseUrl { get; set; } = default!;
 }
