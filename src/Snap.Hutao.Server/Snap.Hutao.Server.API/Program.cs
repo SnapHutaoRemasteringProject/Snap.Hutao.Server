@@ -156,8 +156,8 @@ public static class Program
         });
         app.UseStaticFiles();
 
-        IPHostEntry hostDockerInternal = Dns.GetHostEntry("host.docker.internal");
-        IPAddress dockerGatewayIp = hostDockerInternal.AddressList.FirstOrDefault(ip => ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)!;
+        IPHostEntry hostDockerNginx = Dns.GetHostEntry("host.docker.nginx");
+        IPAddress dockerGatewayIp = hostDockerNginx.AddressList.FirstOrDefault(ip => ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)!;
         IPAddress dockerGatewayIpMapped = dockerGatewayIp.MapToIPv6();
         app.UseForwardedHeaders(new ForwardedHeadersOptions
         {
