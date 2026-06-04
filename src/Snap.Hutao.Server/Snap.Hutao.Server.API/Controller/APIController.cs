@@ -1,12 +1,12 @@
 // Copyright (c) DGP Studio. All rights reserved.
 // Licensed under the MIT license.
 
+using Snap.Hutao.Server.API.Option;
 using Snap.Hutao.Server.Model.Context;
 using Snap.Hutao.Server.Model.Entity;
 using Snap.Hutao.Server.Model.Entity.Unlocker;
 using Snap.Hutao.Server.Model.Response;
 using Snap.Hutao.Server.Model.Static;
-using Snap.Hutao.Server.API.Option;
 
 namespace Snap.Hutao.Server.API.Controller;
 
