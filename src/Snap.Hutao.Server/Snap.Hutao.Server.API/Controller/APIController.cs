@@ -54,6 +54,12 @@ public class APIController : ControllerBase, IDisposable
         return Redirect($"{appOptions.StaticRawBaseUrl}/{category}/{fileName}");
     }
 
+    [HttpGet("static/zip/{category}/{fileName}")]
+    public IActionResult GetZip(string category, string fileName)
+    {
+        return Redirect($"{appOptions.StaticRawBaseUrl}/{category}/{fileName}");
+    }
+
     [HttpGet("static/size")]
     public IActionResult GetSize()
     {
