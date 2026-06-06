@@ -36,10 +36,17 @@ public sealed class PassportService
 
     public string Decrypt(string source)
     {
-        using RSA rsa = RSA.Create(2048);
-        rsa.ImportFromPem(rsaPrivateKey);
-        byte[] decryptedBytes = rsa.Decrypt(Convert.FromBase64String(source), RSAEncryptionPadding.OaepSHA1);
-        return Encoding.UTF8.GetString(decryptedBytes);
+        try
+        {
+            using RSA rsa = RSA.Create(2048);
+            rsa.ImportFromPem(rsaPrivateKey);
+            byte[] decryptedBytes = rsa.Decrypt(Convert.FromBase64String(source), RSAEncryptionPadding.OaepSHA1);
+            return Encoding.UTF8.GetString(decryptedBytes);
+        }
+        catch
+        {
+            return string.Empty;
+        }
     }
 
     public async Task<PassportResult> RegisterAsync(Passport passport, DeviceInfo? deviceInfo)
