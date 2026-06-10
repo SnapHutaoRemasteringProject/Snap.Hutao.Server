@@ -54,10 +54,10 @@ public class APIController : ControllerBase, IDisposable
         return Redirect($"{appOptions.StaticRawBaseUrl}/{category}/{fileName}");
     }
 
-    [HttpGet("static/zip/{category}/{fileName}")]
-    public IActionResult GetZip(string category, string fileName)
+    [HttpGet("static/zip/{fileName}")]
+    public IActionResult GetZip(string fileName)
     {
-        return Redirect($"{appOptions.StaticRawBaseUrl}/{category}/{fileName}");
+        return Redirect($"{appOptions.StaticZipBaseUrl}/{fileName}");
     }
 
     [HttpGet("static/size")]
