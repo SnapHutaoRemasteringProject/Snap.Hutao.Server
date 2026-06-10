@@ -30,6 +30,10 @@ public class HutaoPackageInformation
     [StringLength(50)]
     public string MirrorType { get; set; } = default!;
 
+    [Required]
+    [StringLength(20)]
+    public string PackageType { get; set; } = "MSIX"; // "MSIX" or "Installer"
+
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     public bool IsActive { get; set; } = true;

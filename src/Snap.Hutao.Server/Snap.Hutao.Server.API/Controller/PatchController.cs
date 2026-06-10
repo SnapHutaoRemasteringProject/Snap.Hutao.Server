@@ -19,10 +19,16 @@ public class PatchController : ControllerBase
     }
 
     [HttpGet("hutao")]
-    public async Task<IActionResult> GetPatchInfo()
+    public async Task<IActionResult> GetPatchInfo([FromQuery] string? type = null)
     {
+        string packageType = type?.ToLowerInvariant() switch
+        {
+            "installer" => "Installer",
+            _ => "MSIX",
+        };
+
         var packageInfos = await dbContext.HutaoPackageInformations
-            .Where(x => x.IsActive)
+            .Where(x => x.IsActive && x.PackageType == packageType)
             .OrderByDescending(x => x.CreatedAt)
             .ToListAsync();
 
