@@ -4,7 +4,6 @@
 using Quartz;
 using Sentry;
 using Snap.Hutao.Server.Model.Context;
-using Snap.Hutao.Server.Service.Discord;
 using Snap.Hutao.Server.Service.GachaLog.Statistics;
 using Snap.Hutao.Server.Service.Ranking;
 
@@ -14,7 +13,7 @@ public class SpiralAbyssRecordCleanJob : IJob
 {
     private static readonly TimeSpan LongestDaysAllowed = new(30, 0, 0, 0);
 
-    private readonly DiscordService discordService;
+    // private readonly DiscordService discordService;
     private readonly AppDbContext appDbContext;
     private readonly IRankService rankService;
     private readonly IMemoryCache memoryCache;
@@ -24,7 +23,8 @@ public class SpiralAbyssRecordCleanJob : IJob
         memoryCache = serviceProvider.GetRequiredService<IMemoryCache>();
         appDbContext = serviceProvider.GetRequiredService<AppDbContext>();
         rankService = serviceProvider.GetRequiredService<IRankService>();
-        discordService = serviceProvider.GetRequiredService<DiscordService>();
+
+        // discordService = serviceProvider.GetRequiredService<DiscordService>();
     }
 
     /// <inheritdoc/>
@@ -54,7 +54,8 @@ public class SpiralAbyssRecordCleanJob : IJob
                 long removedKeys = await rankService.ClearRanksAsync().ConfigureAwait(false);
 
                 SpiralAbyssRecordCleanResult result = new(deletedRecordsCount, deletedSpiralAbyssesCount, removedKeys);
-                await discordService.ReportSpiralAbyssCleanResultAsync(result).ConfigureAwait(false);
+
+                // await discordService.ReportSpiralAbyssCleanResultAsync(result).ConfigureAwait(false);
             }
             finally
             {
