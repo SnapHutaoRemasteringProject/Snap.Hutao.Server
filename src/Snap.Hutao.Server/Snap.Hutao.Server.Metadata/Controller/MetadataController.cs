@@ -1,6 +1,7 @@
 // Copyright (c) DGP Studio. All rights reserved.
 // Licensed under the MIT license.
 
+using Snap.Hutao.Server.Metadata.Option;
 using Snap.Hutao.Server.Metadata.Service;
 using Snap.Hutao.Server.Model.Context;
 
@@ -10,18 +11,27 @@ namespace Snap.Hutao.Server.Metadata.Controller;
 [ApiExplorerSettings(GroupName = "Metadata")]
 public sealed class MetadataController : ControllerBase
 {
+    private const string PasswordHeader = "X-Metadata-Key";
+
     private readonly MetadataDbContext metadataDbContext;
     private readonly MetadataRefreshService refreshService;
+    private readonly Option.AppOptions appOptions;
 
-    public MetadataController(MetadataDbContext metadataDbContext, MetadataRefreshService refreshService)
+    public MetadataController(MetadataDbContext metadataDbContext, MetadataRefreshService refreshService, Option.AppOptions appOptions)
     {
         this.metadataDbContext = metadataDbContext;
         this.refreshService = refreshService;
+        this.appOptions = appOptions;
     }
 
     [HttpGet("refresh")]
-    public async Task<IActionResult> RefreshAsync()
+    public async Task<IActionResult> RefreshAsync([FromHeader(Name = PasswordHeader)] string? password)
     {
+        if (string.IsNullOrEmpty(password) || password != appOptions.RefreshPassword)
+        {
+            return Unauthorized(new { message = "无效的刷新密钥" });
+        }
+
         await refreshService.RefreshAllAsync().ConfigureAwait(false);
         return Ok(new { message = "元数据刷新完成" });
     }
