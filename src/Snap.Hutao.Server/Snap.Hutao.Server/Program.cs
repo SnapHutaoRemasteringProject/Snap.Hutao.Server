@@ -75,7 +75,8 @@ public static class Program
 
                 options
                     .UseMySql(connectionString, ServerVersion.AutoDetect(connectionString))
-                    .ConfigureWarnings(c => c.Log((RelationalEventId.CommandExecuted, LogLevel.Debug)));
+                    .ConfigureWarnings(c => c.Log((RelationalEventId.CommandExecuted, LogLevel.Debug)))
+                    .EnableSensitiveDataLogging();
             })
             .AddDbContextPool<MetadataDbContext>((serviceProvider, options) =>
             {
@@ -107,7 +108,6 @@ public static class Program
                 config.ScheduleJob<SpiralAbyssRecordCleanJob>(t => t.StartNow().WithCronSchedule("0 0 4 16 * ?"));
                 config.ScheduleJob<RoleCombatStatisticsRefreshJob>(t => t.StartNow().WithCronSchedule("0 10 */1 * * ?"));
                 config.ScheduleJob<RoleCombatRecordCleanJob>(t => t.StartNow().WithCronSchedule("0 0 4 1 * ?"));
-                config.ScheduleJob<MetadataRefreshJob>(t => t.StartNow().WithCronSchedule("0 */30 * * * ?"));
                 config.ScheduleJob<FufuUidBanRefreshJob>(t => t.StartNow().WithCronSchedule("0 30 */1 * * ?"));
             })
             .AddQuartzServer(options => options.WaitForJobsToComplete = true)
@@ -185,9 +185,7 @@ public static class Program
             .AddTransient<SpiralAbyssRecordCleanJob>()
             .AddTransient<ValidateCdnPermission>()
             .AddTransient<ValidateGachaLogPermission>()
-            .AddTransient<ValidateMaintainPermission>()
-            .AddTransient<MetadataRefreshJob>()
-            .AddScoped<Snap.Hutao.Server.Service.Metadata.MetadataRefreshService>();
+            .AddTransient<ValidateMaintainPermission>();
 
         // Authentication
         services
@@ -268,15 +266,15 @@ public static class Program
         });
         app.UseStaticFiles();
 
-        IPHostEntry hostDockerNginx = Dns.GetHostEntry("host.docker.nginx");
-        IPAddress dockerGatewayIp = hostDockerNginx.AddressList.FirstOrDefault(ip => ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)!;
-        IPAddress dockerGatewayIpMapped = dockerGatewayIp.MapToIPv6();
-        app.UseForwardedHeaders(new ForwardedHeadersOptions
-        {
-            ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto,
-            ForwardLimit = 2,
-            KnownProxies = { dockerGatewayIp, dockerGatewayIpMapped },
-        });
+        //IPHostEntry hostDockerNginx = Dns.GetHostEntry("host.docker.nginx");
+        //IPAddress dockerGatewayIp = hostDockerNginx.AddressList.FirstOrDefault(ip => ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)!;
+        //IPAddress dockerGatewayIpMapped = dockerGatewayIp.MapToIPv6();
+        //app.UseForwardedHeaders(new ForwardedHeadersOptions
+        //{
+        //    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto,
+        //    ForwardLimit = 2,
+        //    KnownProxies = { dockerGatewayIp, dockerGatewayIpMapped },
+        //});
 
         // Routes
         // CORS
@@ -321,9 +319,14 @@ public static class Program
         using IServiceScope scope = app.Services.CreateScope();
         AppDbContext context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
         MetadataDbContext metadataDbContext = scope.ServiceProvider.GetRequiredService<MetadataDbContext>();
-        metadataDbContext.Database.EnsureCreated();
         ILogger logger = scope.ServiceProvider.GetRequiredService<ILogger<IHost>>();
 
+        MigrateDbContext(context, logger);
+        MigrateDbContext(metadataDbContext, logger);
+    }
+
+    private static void MigrateDbContext(DbContext context, ILogger logger)
+    {
         if (context.Database.IsRelational())
         {
             try
@@ -331,67 +334,44 @@ public static class Program
                 var pendingMigrations = context.Database.GetPendingMigrations().ToList();
                 if (pendingMigrations.Any())
                 {
-                    logger.LogInformation("发现 {Count} 个待应用的迁移: {Migrations}",
-                        pendingMigrations.Count, string.Join(", ", pendingMigrations));
+                    logger.LogInformation("[{Context}] 发现 {Count} 个待应用的迁移: {Migrations}",
+                        context.GetType().Name, pendingMigrations.Count, string.Join(", ", pendingMigrations));
 
                     context.Database.SetCommandTimeout(TimeSpan.FromMinutes(10));
                     context.Database.Migrate();
-                    logger.LogInformation("数据库迁移完成");
+                    logger.LogInformation("[{Context}] 数据库迁移完成", context.GetType().Name);
                 }
                 else
                 {
-                    logger.LogInformation("没有待应用的迁移");
+                    logger.LogInformation("[{Context}] 没有待应用的迁移", context.GetType().Name);
 
                     if (!context.Database.CanConnect())
                     {
-                        logger.LogWarning("无法连接到数据库，尝试创建数据库...");
+                        logger.LogWarning("[{Context}] 无法连接到数据库，尝试创建数据库...", context.GetType().Name);
                         context.Database.EnsureCreated();
-                        logger.LogInformation("数据库创建完成");
+                        logger.LogInformation("[{Context}] 数据库创建完成", context.GetType().Name);
                     }
                 }
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "数据库迁移/创建失败，尝试回退到 EnsureCreated");
+                logger.LogError(ex, "[{Context}] 数据库迁移/创建失败，尝试回退到 EnsureCreated", context.GetType().Name);
 
                 try
                 {
                     context.Database.EnsureCreated();
-                    logger.LogInformation("回退：数据库通过 EnsureCreated 创建完成");
+                    logger.LogInformation("[{Context}] 回退：数据库通过 EnsureCreated 创建完成", context.GetType().Name);
                 }
                 catch (Exception ensureEx)
                 {
-                    logger.LogCritical(ensureEx, "数据库创建完全失败");
+                    logger.LogCritical(ensureEx, "[{Context}] 数据库创建完全失败", context.GetType().Name);
                     throw;
                 }
             }
         }
         else
         {
-            logger.LogWarning("数据库不是关系型数据库，跳过迁移");
-        }
-    }
-
-    private static void RefreshMetadataOnStartup(IHost app)
-    {
-        using IServiceScope scope = app.Services.CreateScope();
-        var logger = scope.ServiceProvider.GetRequiredService<ILogger<IHost>>();
-        var metadataRefreshService = scope.ServiceProvider.GetRequiredService<Snap.Hutao.Server.Service.Metadata.MetadataRefreshService>();
-        var statisticsService = scope.ServiceProvider.GetRequiredService<GachaLogStatisticsService>();
-
-        try
-        {
-            logger.LogInformation("服务器启动时开始执行元数据刷新...");
-
-            metadataRefreshService.RefreshGachaEventsAsync().GetAwaiter().GetResult();
-            metadataRefreshService.RefreshKnownItemsAsync().GetAwaiter().GetResult();
-            Task.Run(async () => await statisticsService.RunAsync()).Wait();
-
-            logger.LogInformation("服务器启动时元数据刷新完成");
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "服务器启动时元数据刷新失败");
+            logger.LogWarning("[{Context}] 数据库不是关系型数据库，跳过迁移", context.GetType().Name);
         }
     }
 }

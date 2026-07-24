@@ -40,6 +40,26 @@ services:
       - redis
       - homa-server
 
+  metadata-server:
+    build:
+      context: .
+      dockerfile: Snap.Hutao.Server.Metadata/Dockerfile
+      target: final
+    image: metadata-server:latest
+    ports:
+      - "5078:80"
+    extra_hosts:
+      - "host.docker.internal:172.17.0.1"
+      - "host.docker.nginx:172.18.0.1"
+      - "host.docker.gateway:host-gateway"
+    container_name: Metadata-Server
+    volumes:
+      - ./appsettings-metadata.json:/app/appsettings.json
+    restart: unless-stopped
+    depends_on:
+      - redis
+      - homa-server
+
   redis:
     container_name: Hutao-Server-Redis
     image: redis:latest

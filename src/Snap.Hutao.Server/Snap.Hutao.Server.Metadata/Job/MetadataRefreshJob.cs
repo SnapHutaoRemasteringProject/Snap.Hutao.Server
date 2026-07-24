@@ -3,9 +3,9 @@
 
 using Quartz;
 using Sentry;
-using Snap.Hutao.Server.Service.Metadata;
+using Snap.Hutao.Server.Metadata.Service;
 
-namespace Snap.Hutao.Server.Job;
+namespace Snap.Hutao.Server.Metadata.Job;
 
 public sealed class MetadataRefreshJob : IJob
 {
@@ -21,9 +21,7 @@ public sealed class MetadataRefreshJob : IJob
         SentryId id = SentrySdk.CaptureCheckIn("MetadataRefreshJob", CheckInStatus.InProgress);
         try
         {
-            await metadataRefreshService.RefreshGachaEventsAsync(context.CancellationToken).ConfigureAwait(false);
-            await metadataRefreshService.RefreshKnownItemsAsync(context.CancellationToken).ConfigureAwait(false);
-
+            await metadataRefreshService.RefreshAllAsync(context.CancellationToken).ConfigureAwait(false);
             SentrySdk.CaptureCheckIn("MetadataRefreshJob", CheckInStatus.Ok, id);
         }
         catch

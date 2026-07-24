@@ -140,6 +140,7 @@ public sealed class GachaLogService
         try
         {
             List<EntityGachaItem> entities = [];
+            gachaItems = gachaItems.DistinctBy(x => x.Id).ToList();
             AppendModelsToEntities(gachaItems, entities, userId, uid, true);
             int count = await appDbContext.GachaItems.AddRangeAndSaveAsync(entities).ConfigureAwait(false);
 
