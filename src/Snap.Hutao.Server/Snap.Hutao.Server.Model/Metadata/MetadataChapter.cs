@@ -24,4 +24,7 @@ public sealed class MetadataChapter
     public string? ImageTitle { get; set; }
 
     public uint CityId { get; set; }
+
+    [MaxLength(256)]
+    public string? ChapterIcon { get; set; }
 }

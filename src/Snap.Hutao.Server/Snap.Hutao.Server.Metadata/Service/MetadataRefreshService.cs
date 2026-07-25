@@ -128,6 +128,7 @@ public sealed class MetadataRefreshService
                     Title = string.IsNullOrEmpty(c.Title) ? null : c.Title,
                     ImageTitle = string.IsNullOrEmpty(c.ImageTitle) ? null : c.ImageTitle,
                     CityId = c.CityId,
+                    ChapterIcon = string.IsNullOrEmpty(c.ChapterIcon) ? null : c.ChapterIcon,
                 }).ToList();
             }).ConfigureAwait(false);
 
@@ -369,6 +370,51 @@ public sealed class MetadataRefreshService
                     Icon = t.Icon,
                     FloorIds = t.FloorIds.GetRawText(),
                     Descriptions = t.Descriptions.GetRawText(),
+                }).ToList();
+            }).ConfigureAwait(false);
+
+        await RefreshTableAsync(locale, localePath, "Combine.json", typeof(MetadataCombine),
+            () => metadataDbContext.Combines.Where(c => c.Locale == locale), cancellationToken,
+            (json, loc) =>
+            {
+                var items = JsonSerializer.Deserialize<List<Combine>>(json);
+                return items?.Select(c => new MetadataCombine
+                {
+                    Id = c.Id,
+                    Locale = loc,
+                    Type = c.Type,
+                    SubType = c.SubType,
+                    RecipeType = c.RecipeType,
+                    Cost = c.Cost,
+                    Result = c.Result.GetRawText(),
+                    Materials = c.Materials.GetRawText(),
+                    EffectDescription = c.EffectDescription,
+                }).ToList();
+            }).ConfigureAwait(false);
+
+        await RefreshTableAsync(locale, localePath, "MainQuest.json", typeof(MetadataMainQuest),
+            () => metadataDbContext.MainQuests.Where(m => m.Locale == locale), cancellationToken,
+            (json, loc) =>
+            {
+                var items = JsonSerializer.Deserialize<List<MainQuest>>(json);
+                return items?.Select(m => new MetadataMainQuest
+                {
+                    Id = m.Id,
+                    Locale = loc,
+                    Type = m.Type,
+                    Title = m.Title,
+                    Description = m.Description,
+                    UnlockDescription = m.UnlockDescription,
+                    ChapterId = m.ChapterId,
+                    SortWeight = m.SortWeight,
+                    RecommendLevel = m.RecommendLevel,
+                    ActivityId = m.ActivityId,
+                    MainQuestTag = m.MainQuestTag,
+                    ShowType = m.ShowType,
+                    Repeatable = m.Repeatable,
+                    Series = m.Series,
+                    TaskId = m.TaskId,
+                    RewardList = m.RewardList.GetRawText(),
                 }).ToList();
             }).ConfigureAwait(false);
 

@@ -26,6 +26,8 @@ public sealed class MetadataDbContext : DbContext
 
     public DbSet<MetadataChapter> Chapters { get; set; }
 
+    public DbSet<MetadataCombine> Combines { get; set; }
+
     public DbSet<MetadataDisplayItem> DisplayItems { get; set; }
 
     public DbSet<MetadataFurniture> Furniture { get; set; }
@@ -37,6 +39,8 @@ public sealed class MetadataDbContext : DbContext
     public DbSet<MetadataFurnitureType> FurnitureTypes { get; set; }
 
     public DbSet<MetadataHyperLinkName> HyperLinkNames { get; set; }
+
+    public DbSet<MetadataMainQuest> MainQuests { get; set; }
 
     public DbSet<MetadataMaterial> Materials { get; set; }
 

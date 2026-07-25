@@ -127,6 +127,32 @@ public sealed class MetadataController : ControllerBase
         return Ok(items);
     }
 
+    [HttpGet("combines")]
+    public async Task<IActionResult> GetCombines([FromQuery] string? locale)
+    {
+        var query = metadataDbContext.Combines.AsQueryable();
+        if (!string.IsNullOrEmpty(locale))
+        {
+            query = query.Where(c => c.Locale == locale);
+        }
+
+        var items = await query.ToListAsync().ConfigureAwait(false);
+        return Ok(items);
+    }
+
+    [HttpGet("main-quests")]
+    public async Task<IActionResult> GetMainQuests([FromQuery] string? locale)
+    {
+        var query = metadataDbContext.MainQuests.AsQueryable();
+        if (!string.IsNullOrEmpty(locale))
+        {
+            query = query.Where(m => m.Locale == locale);
+        }
+
+        var items = await query.ToListAsync().ConfigureAwait(false);
+        return Ok(items);
+    }
+
     [HttpGet("display-items")]
     public async Task<IActionResult> GetDisplayItems([FromQuery] string? locale)
     {

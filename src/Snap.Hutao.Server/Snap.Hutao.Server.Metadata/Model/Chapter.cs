@@ -21,6 +21,8 @@ public sealed class Chapter
 
     public string Icon { get; set; } = default!;
 
+    public string ChapterIcon { get; set; } = default!;
+
     public string ImageTitle { get; set; } = default!;
 
     public string SerialNumberIcon { get; set; } = default!;
