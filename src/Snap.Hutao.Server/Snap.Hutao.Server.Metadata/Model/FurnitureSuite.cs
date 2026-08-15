@@ -7,7 +7,7 @@ public sealed class FurnitureSuite
 {
     public uint Id { get; set; } = default!;
 
-    public JsonElement Types { get; set; } = default!;
+    public JsonElement? Types { get; set; }
 
     public string Name { get; set; } = default!;
 
@@ -15,5 +15,5 @@ public sealed class FurnitureSuite
 
     public string ItemIcon { get; set; } = default!;
 
-    public JsonElement Units { get; set; } = default!;
+    public JsonElement? Units { get; set; }
 }

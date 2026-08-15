@@ -25,8 +25,8 @@ public sealed class MetadataFurniture
     public uint RankLevel { get; set; }
 
     [Column(TypeName = "json")]
-    public string Types { get; set; } = default!;
+    public string? Types { get; set; }
 
     [Column(TypeName = "json")]
-    public string SourceTexts { get; set; } = default!;
+    public string? SourceTexts { get; set; }
 }

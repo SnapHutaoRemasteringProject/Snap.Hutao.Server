@@ -163,8 +163,8 @@ public sealed class MetadataRefreshService
                     Comfort = f.Comfort,
                     Cost = f.Cost,
                     RankLevel = f.RankLevel,
-                    Types = f.Types.GetRawText(),
-                    SourceTexts = f.SourceTexts.GetRawText(),
+                    Types = f.Types?.GetRawText(),
+                    SourceTexts = f.SourceTexts?.GetRawText(),
                 }).ToList();
             }).ConfigureAwait(false);
 
@@ -194,8 +194,8 @@ public sealed class MetadataRefreshService
                     Locale = loc,
                     Name = f.Name,
                     Description = f.Description,
-                    Types = f.Types.GetRawText(),
-                    Units = f.Units.GetRawText(),
+                    Types = f.Types?.GetRawText(),
+                    Units = f.Units?.GetRawText(),
                 }).ToList();
             }).ConfigureAwait(false);
 

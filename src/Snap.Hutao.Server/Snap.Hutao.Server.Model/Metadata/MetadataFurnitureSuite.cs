@@ -19,8 +19,8 @@ public sealed class MetadataFurnitureSuite
     public string? Description { get; set; }
 
     [Column(TypeName = "json")]
-    public string Types { get; set; } = default!;
+    public string? Types { get; set; }
 
     [Column(TypeName = "json")]
-    public string Units { get; set; } = default!;
+    public string? Units { get; set; }
 }

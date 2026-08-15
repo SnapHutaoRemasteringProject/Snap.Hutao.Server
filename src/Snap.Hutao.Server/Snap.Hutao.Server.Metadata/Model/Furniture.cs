@@ -5,7 +5,7 @@ namespace Snap.Hutao.Server.Metadata.Model;
 
 public sealed class Furniture
 {
-    public JsonElement Types { get; set; } = default!;
+    public JsonElement? Types { get; set; }
 
     public uint SurfaceType { get; set; } = default!;
 
@@ -29,7 +29,7 @@ public sealed class Furniture
 
     public uint GroupRecordType { get; set; } = default!;
 
-    public JsonElement SourceTexts { get; set; } = default!;
+    public JsonElement? SourceTexts { get; set; }
 
     public uint Id { get; set; } = default!;
 
