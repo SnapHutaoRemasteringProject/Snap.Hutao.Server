@@ -1,10 +1,6 @@
 ﻿// Copyright (c) DGP Studio. All rights reserved.
 // Licensed under the MIT license.
 
-
-// Copyright (c) DGP Studio. All rights reserved.
-// Licensed under the MIT license.
-
 namespace Snap.Hutao.Server.API.Option;
 
 public sealed class AppOptions

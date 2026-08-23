@@ -5,7 +5,6 @@ using Snap.Hutao.Server.Model.Context;
 using Snap.Hutao.Server.Model.Entity.GachaLog;
 using Snap.Hutao.Server.Model.GachaLog;
 using Snap.Hutao.Server.Model.Metadata;
-using Snap.Hutao.Server.Service.Discord;
 using Snap.Hutao.Server.Service.Legacy.Primitive;
 using System.Runtime.InteropServices;
 
@@ -32,15 +31,12 @@ public sealed class GachaLogStatisticsService
 
     private readonly AppDbContext appDbContext;
     private readonly MetadataDbContext metadataDbContext;
-    private readonly DiscordService discordService;
     private readonly IMemoryCache memoryCache;
 
     public GachaLogStatisticsService(IServiceProvider serviceProvider)
     {
         appDbContext = serviceProvider.GetRequiredService<AppDbContext>();
         metadataDbContext = serviceProvider.GetRequiredService<MetadataDbContext>();
-
-        // discordService = serviceProvider.GetRequiredService<DiscordService>();
         memoryCache = serviceProvider.GetRequiredService<IMemoryCache>();
     }
 
@@ -67,8 +63,6 @@ public sealed class GachaLogStatisticsService
 
             await Task.Run(() => RunCore(tracker)).ConfigureAwait(false);
             GachaEventStatistics statistics = tracker.CompleteTracking(appDbContext, memoryCache);
-
-            // await discordService.ReportGachaEventStatisticsAsync(statistics).ConfigureAwait(false);
         }
         finally
         {

@@ -1,8 +1,6 @@
 ﻿// Copyright (c) DGP Studio. All rights reserved.
 // Licensed under the MIT license.
 
-namespace Snap.Hutao.Server.Model.Context;
-
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Snap.Hutao.Server.Model.Context.Configuration;
 using Snap.Hutao.Server.Model.Entity;
@@ -16,6 +14,8 @@ using Snap.Hutao.Server.Model.Entity.SpiralAbyss;
 using Snap.Hutao.Server.Model.Entity.Telemetry;
 using Snap.Hutao.Server.Model.Entity.Unlocker;
 using Snap.Hutao.Server.Model.Wallpaper;
+
+namespace Snap.Hutao.Server.Model.Context;
 
 public sealed class AppDbContext : IdentityDbContext<HutaoUser, IdentityRole<int>, int>
 {

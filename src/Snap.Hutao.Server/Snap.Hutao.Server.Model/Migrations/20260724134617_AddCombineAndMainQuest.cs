@@ -1,4 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿// Copyright (c) DGP Studio. All rights reserved.
+// Licensed under the MIT license.
+
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -34,7 +37,7 @@ namespace Snap.Hutao.Server.Model.Migrations
                     Materials = table.Column<string>(type: "json", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     EffectDescription = table.Column<string>(type: "text", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4")
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                 },
                 constraints: table =>
                 {
@@ -66,7 +69,7 @@ namespace Snap.Hutao.Server.Model.Migrations
                     Series = table.Column<uint>(type: "int unsigned", nullable: false),
                     TaskId = table.Column<uint>(type: "int unsigned", nullable: false),
                     RewardList = table.Column<string>(type: "json", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4")
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                 },
                 constraints: table =>
                 {

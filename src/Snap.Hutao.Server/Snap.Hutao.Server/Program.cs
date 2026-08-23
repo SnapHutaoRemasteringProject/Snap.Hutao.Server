@@ -266,15 +266,15 @@ public static class Program
         });
         app.UseStaticFiles();
 
-        //IPHostEntry hostDockerNginx = Dns.GetHostEntry("host.docker.nginx");
-        //IPAddress dockerGatewayIp = hostDockerNginx.AddressList.FirstOrDefault(ip => ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)!;
-        //IPAddress dockerGatewayIpMapped = dockerGatewayIp.MapToIPv6();
-        //app.UseForwardedHeaders(new ForwardedHeadersOptions
-        //{
-        //    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto,
-        //    ForwardLimit = 2,
-        //    KnownProxies = { dockerGatewayIp, dockerGatewayIpMapped },
-        //});
+        // IPHostEntry hostDockerNginx = Dns.GetHostEntry("host.docker.nginx");
+        // IPAddress dockerGatewayIp = hostDockerNginx.AddressList.FirstOrDefault(ip => ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)!;
+        // IPAddress dockerGatewayIpMapped = dockerGatewayIp.MapToIPv6();
+        // app.UseForwardedHeaders(new ForwardedHeadersOptions
+        // {
+        //     ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto,
+        //     ForwardLimit = 2,
+        //     KnownProxies = { dockerGatewayIp, dockerGatewayIpMapped },
+        // });
 
         // Routes
         // CORS

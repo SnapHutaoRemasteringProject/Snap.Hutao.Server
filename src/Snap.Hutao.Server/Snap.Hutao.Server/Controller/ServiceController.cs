@@ -136,6 +136,7 @@ public class ServiceController : ControllerBase
         {
             announcement.Title = request.Title;
         }
+
         if (!string.IsNullOrEmpty(request.Content))
         {
             announcement.Content = request.Content;
@@ -189,9 +190,9 @@ public class ServiceController : ControllerBase
         if (!string.IsNullOrEmpty(q))
         {
             query = query.Where(u =>
-                u.UserName.Contains(q) ||
-                u.NormalizedUserName.Contains(q.ToUpperInvariant()) ||
-                u.Email.Contains(q));
+                (u.UserName != null && u.UserName.Contains(q)) ||
+                (u.NormalizedUserName != null && u.NormalizedUserName.Contains(q.ToUpperInvariant())) ||
+                (u.Email != null && u.Email.Contains(q)));
         }
 
         var users = await query

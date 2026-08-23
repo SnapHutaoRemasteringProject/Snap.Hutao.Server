@@ -1,4 +1,7 @@
-﻿namespace Snap.Hutao.Server.Model.Entity.Unlocker;
+﻿// Copyright (c) DGP Studio. All rights reserved.
+// Licensed under the MIT license.
+
+namespace Snap.Hutao.Server.Model.Entity.Unlocker;
 
 [Table("unlocker_banned")]
 public class UnlockerBanned

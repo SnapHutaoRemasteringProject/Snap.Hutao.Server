@@ -7,7 +7,6 @@ using Snap.Hutao.Server.Model.Entity.Passport;
 using Snap.Hutao.Server.Model.Github;
 using Snap.Hutao.Server.Option;
 using Snap.Hutao.Server.Service.Authorization;
-using Snap.Hutao.Server.Service.Discord;
 using Snap.Hutao.Server.Service.OAuth;
 using System.Web;
 
@@ -18,7 +17,6 @@ public class GithubService : IOAuthProvider
 {
     private readonly GithubApiService githubApiService;
     private readonly PassportService passportService;
-    private readonly DiscordService discordService;
     private readonly GithubOptions githubOptions;
     private readonly AppDbContext appDbContext;
 
@@ -26,8 +24,6 @@ public class GithubService : IOAuthProvider
     {
         githubApiService = serviceProvider.GetRequiredService<GithubApiService>();
         passportService = serviceProvider.GetRequiredService<PassportService>();
-
-        // discordService = serviceProvider.GetRequiredService<DiscordService>();
         githubOptions = serviceProvider.GetRequiredService<AppOptions>().Github;
         appDbContext = serviceProvider.GetRequiredService<AppDbContext>();
     }
@@ -133,8 +129,6 @@ public class GithubService : IOAuthProvider
                 """,
             Event = GithubWebhookEvent.WorkflowRun,
         };
-
-        // await discordService.ReportGithubWebhookAsync(githubMessage);
     }
 
     public async ValueTask ProcessReleaseEventAsync(Release release)
@@ -158,7 +152,5 @@ public class GithubService : IOAuthProvider
                 """,
             Event = GithubWebhookEvent.Release,
         };
-
-        // await discordService.ReportGithubWebhookAsync(githubMessage);
     }
 }

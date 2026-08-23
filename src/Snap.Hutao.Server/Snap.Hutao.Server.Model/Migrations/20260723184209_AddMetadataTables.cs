@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) DGP Studio. All rights reserved.
+// Licensed under the MIT license.
+
+using System;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 
@@ -54,7 +57,7 @@ namespace Snap.Hutao.Server.Model.Migrations
                     UpPurpleItem3 = table.Column<uint>(type: "int unsigned", nullable: false),
                     UpPurpleItem4 = table.Column<uint>(type: "int unsigned", nullable: false),
                     UpPurpleItem5 = table.Column<uint>(type: "int unsigned", nullable: false),
-                    Type = table.Column<int>(type: "int", nullable: false)
+                    Type = table.Column<int>(type: "int", nullable: false),
                 },
                 constraints: table =>
                 {
@@ -68,7 +71,7 @@ namespace Snap.Hutao.Server.Model.Migrations
                 {
                     Id = table.Column<uint>(type: "int unsigned", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    Quality = table.Column<uint>(type: "int unsigned", nullable: false)
+                    Quality = table.Column<uint>(type: "int unsigned", nullable: false),
                 },
                 constraints: table =>
                 {
@@ -89,7 +92,7 @@ namespace Snap.Hutao.Server.Model.Migrations
                     Icon = table.Column<string>(type: "varchar(256)", maxLength: 256, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     FinishReward = table.Column<string>(type: "json", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4")
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                 },
                 constraints: table =>
                 {
@@ -116,7 +119,7 @@ namespace Snap.Hutao.Server.Model.Migrations
                     IsDailyQuest = table.Column<bool>(type: "tinyint(1)", nullable: false),
                     PreviousId = table.Column<uint>(type: "int unsigned", nullable: false),
                     FinishReward = table.Column<string>(type: "json", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4")
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                 },
                 constraints: table =>
                 {
@@ -152,7 +155,7 @@ namespace Snap.Hutao.Server.Model.Migrations
                     FetterInfo = table.Column<string>(type: "json", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Costumes = table.Column<string>(type: "json", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4")
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                 },
                 constraints: table =>
                 {
@@ -174,7 +177,7 @@ namespace Snap.Hutao.Server.Model.Migrations
                     Icon = table.Column<string>(type: "varchar(256)", maxLength: 256, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Type = table.Column<uint>(type: "int unsigned", nullable: false),
-                    RankLevel = table.Column<uint>(type: "int unsigned", nullable: false)
+                    RankLevel = table.Column<uint>(type: "int unsigned", nullable: false),
                 },
                 constraints: table =>
                 {
@@ -196,7 +199,7 @@ namespace Snap.Hutao.Server.Model.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     ImageTitle = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    CityId = table.Column<uint>(type: "int unsigned", nullable: false)
+                    CityId = table.Column<uint>(type: "int unsigned", nullable: false),
                 },
                 constraints: table =>
                 {
@@ -218,7 +221,7 @@ namespace Snap.Hutao.Server.Model.Migrations
                     TypeDescription = table.Column<string>(type: "varchar(128)", maxLength: 128, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     RankLevel = table.Column<uint>(type: "int unsigned", nullable: false),
-                    ItemType = table.Column<uint>(type: "int unsigned", nullable: false)
+                    ItemType = table.Column<uint>(type: "int unsigned", nullable: false),
                 },
                 constraints: table =>
                 {
@@ -243,7 +246,7 @@ namespace Snap.Hutao.Server.Model.Migrations
                     Types = table.Column<string>(type: "json", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     SourceTexts = table.Column<string>(type: "json", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4")
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                 },
                 constraints: table =>
                 {
@@ -261,7 +264,7 @@ namespace Snap.Hutao.Server.Model.Migrations
                     ItemId = table.Column<uint>(type: "int unsigned", nullable: false),
                     Experience = table.Column<uint>(type: "int unsigned", nullable: false),
                     Materials = table.Column<string>(type: "json", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4")
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                 },
                 constraints: table =>
                 {
@@ -283,7 +286,7 @@ namespace Snap.Hutao.Server.Model.Migrations
                     Types = table.Column<string>(type: "json", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Units = table.Column<string>(type: "json", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4")
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                 },
                 constraints: table =>
                 {
@@ -305,7 +308,7 @@ namespace Snap.Hutao.Server.Model.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     TabIcon = table.Column<string>(type: "varchar(256)", maxLength: 256, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Sort = table.Column<uint>(type: "int unsigned", nullable: false)
+                    Sort = table.Column<uint>(type: "int unsigned", nullable: false),
                 },
                 constraints: table =>
                 {
@@ -323,7 +326,7 @@ namespace Snap.Hutao.Server.Model.Migrations
                     Name = table.Column<string>(type: "varchar(256)", maxLength: 256, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Description = table.Column<string>(type: "text", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4")
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                 },
                 constraints: table =>
                 {
@@ -348,7 +351,7 @@ namespace Snap.Hutao.Server.Model.Migrations
                     ItemType = table.Column<uint>(type: "int unsigned", nullable: false),
                     MaterialType = table.Column<uint>(type: "int unsigned", nullable: false),
                     Icon = table.Column<string>(type: "varchar(256)", maxLength: 256, nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4")
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                 },
                 constraints: table =>
                 {
@@ -371,7 +374,7 @@ namespace Snap.Hutao.Server.Model.Migrations
                     Icon = table.Column<string>(type: "varchar(256)", maxLength: 256, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Type = table.Column<uint>(type: "int unsigned", nullable: false),
-                    Arkhe = table.Column<uint>(type: "int unsigned", nullable: false)
+                    Arkhe = table.Column<uint>(type: "int unsigned", nullable: false),
                 },
                 constraints: table =>
                 {
@@ -392,7 +395,7 @@ namespace Snap.Hutao.Server.Model.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     RankLevel = table.Column<uint>(type: "int unsigned", nullable: false),
                     Pictures = table.Column<string>(type: "json", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4")
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                 },
                 constraints: table =>
                 {
@@ -412,7 +415,7 @@ namespace Snap.Hutao.Server.Model.Migrations
                     Icon = table.Column<string>(type: "varchar(256)", maxLength: 256, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     UnlockType = table.Column<uint>(type: "int unsigned", nullable: false),
-                    UnlockParameter = table.Column<uint>(type: "int unsigned", nullable: false)
+                    UnlockParameter = table.Column<uint>(type: "int unsigned", nullable: false),
                 },
                 constraints: table =>
                 {
@@ -435,7 +438,7 @@ namespace Snap.Hutao.Server.Model.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     RankLevel = table.Column<uint>(type: "int unsigned", nullable: false),
                     Ids = table.Column<string>(type: "json", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4")
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                 },
                 constraints: table =>
                 {
@@ -459,7 +462,7 @@ namespace Snap.Hutao.Server.Model.Migrations
                     NeedNumber = table.Column<string>(type: "json", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Descriptions = table.Column<string>(type: "json", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4")
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                 },
                 constraints: table =>
                 {
@@ -481,7 +484,7 @@ namespace Snap.Hutao.Server.Model.Migrations
                     SpecialAvatars = table.Column<string>(type: "json", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     InitialAvatars = table.Column<string>(type: "json", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4")
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                 },
                 constraints: table =>
                 {
@@ -505,7 +508,7 @@ namespace Snap.Hutao.Server.Model.Migrations
                     FloorIds = table.Column<string>(type: "json", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Descriptions = table.Column<string>(type: "json", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4")
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                 },
                 constraints: table =>
                 {
@@ -535,7 +538,7 @@ namespace Snap.Hutao.Server.Model.Migrations
                     Affix = table.Column<string>(type: "json", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     CultivationItems = table.Column<string>(type: "json", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4")
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                 },
                 constraints: table =>
                 {
