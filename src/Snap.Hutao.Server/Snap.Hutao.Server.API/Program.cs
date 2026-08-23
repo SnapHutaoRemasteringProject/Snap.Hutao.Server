@@ -9,6 +9,7 @@ using Quartz.AspNetCore;
 using Quartz.Simpl;
 using Snap.Hutao.Server.API.Controller.Filter;
 using Snap.Hutao.Server.API.Option;
+using Snap.Hutao.Server.API.Service.Yae;
 using Snap.Hutao.Server.Model.Context;
 using Snap.Hutao.Server.Model.Entity.Passport;
 using Snap.Hutao.Server.Model.Response;
@@ -82,6 +83,7 @@ public static class Program
 
             // .AddSingleton<DiscordService>()
             .AddSingleton(appOptions)
+            .AddSingleton<YaeMetadataService>()
             .AddTransient<ValidateMaintainPermission>();
 
         // Authentication
