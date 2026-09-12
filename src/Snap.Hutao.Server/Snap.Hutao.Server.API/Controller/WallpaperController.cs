@@ -35,17 +35,19 @@ public class WallpaperController : ControllerBase
         message.EnsureSuccessStatusCode();
 
         OfficialLauncherBackground? background = await message.Content.ReadFromJsonAsync<OfficialLauncherBackground>();
-        string? url = background?.Data?.GameInfoList?
+        string[] urls = [.. background?.Data?.GameInfoList?
             .FirstOrDefault(gameInfo => gameInfo.Game?.Biz is "hk4e_cn")?
             .Backgrounds?
-            .FirstOrDefault(item => !string.IsNullOrEmpty(item.Background?.Url))?
-            .Background?
-            .Url;
+            .Select(item => item.Background?.Url)
+            .Where(url => !string.IsNullOrEmpty(url))
+            .Select(url => url!) ?? []];
 
-        if (url is null)
+        if (urls.Length is 0)
         {
             throw new InvalidOperationException("Failed to fetch wallpaper data.");
         }
+
+        string url = Random.Shared.GetItems(urls, 1)[0];
 
         Wallpaper wallpaper = new()
         {
