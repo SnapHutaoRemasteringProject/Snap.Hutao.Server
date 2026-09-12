@@ -2,6 +2,7 @@
 // Licensed under the MIT license.
 
 using Snap.Hutao.Server.Model.Context;
+using Snap.Hutao.Server.Model.HoyoPlay;
 using Snap.Hutao.Server.Model.Response;
 using Snap.Hutao.Server.Model.Wallpaper;
 
@@ -11,6 +12,9 @@ namespace Snap.Hutao.Server.API.Controller;
 [ApiController]
 public class WallpaperController : ControllerBase
 {
+    private const string HoyoPlayAllGameBasicInfoUrl = "https://hyp-api.mihoyo.com/hyp/hyp-connect/api/getAllGameBasicInfo?launcher_id=jGHBHlcOq1&language=zh-cn&game_id=1Z8W5NHUQb";
+    private const string HoyoPlayUserAgent = "HYPContainer/1.1.4.133";
+
     private readonly HttpClient httpClient;
     private readonly AppDbContext dbContext;
     private readonly string upstreamUrl = "https://api.gentle.house/wallpaper/";
@@ -24,24 +28,48 @@ public class WallpaperController : ControllerBase
     [HttpGet("hoyoplay")]
     public async Task<IActionResult> GetHoyoplay()
     {
-        string url = $"{upstreamUrl}hoyoplay";
-        Response<Wallpaper> response = await httpClient.GetFromJsonAsync<Response<Wallpaper>>(url) ?? throw new InvalidOperationException("Failed to fetch wallpaper data.");
+        using HttpRequestMessage request = new(HttpMethod.Get, HoyoPlayAllGameBasicInfoUrl);
+        request.Headers.UserAgent.ParseAdd(HoyoPlayUserAgent);
 
-        if (!dbContext.Wallpapers.Any(w => w.Url == response.Data!.Url))
+        using HttpResponseMessage message = await httpClient.SendAsync(request);
+        message.EnsureSuccessStatusCode();
+
+        OfficialLauncherBackground? background = await message.Content.ReadFromJsonAsync<OfficialLauncherBackground>();
+        string? url = background?.Data?.GameInfoList?
+            .FirstOrDefault(gameInfo => gameInfo.Game?.Biz is "hk4e_cn")?
+            .Backgrounds?
+            .FirstOrDefault(item => !string.IsNullOrEmpty(item.Background?.Url))?
+            .Background?
+            .Url;
+
+        if (url is null)
+        {
+            throw new InvalidOperationException("Failed to fetch wallpaper data.");
+        }
+
+        Wallpaper wallpaper = new()
+        {
+            Url = url,
+            SourceUrl = "https://hoyoplay.hoyoverse.com/",
+            Author = "miHoYo",
+            Uploader = "miHoYo",
+        };
+
+        if (!dbContext.Wallpapers.Any(w => w.Url == wallpaper.Url))
         {
             dbContext.Wallpapers.Add(new()
             {
-                Url = response.Data!.Url,
-                SourceUrl = response.Data!.SourceUrl,
-                Author = response.Data!.Author,
-                Uploader = response.Data!.Uploader,
+                Url = wallpaper.Url,
+                SourceUrl = wallpaper.SourceUrl,
+                Author = wallpaper.Author,
+                Uploader = wallpaper.Uploader,
                 Type = "Hoyoplay",
             });
 
             dbContext.SaveChanges();
         }
 
-        return Response<Wallpaper>.Success("OK", response.Data!);
+        return Response<Wallpaper>.Success("OK", wallpaper);
     }
 
     [HttpGet("bing")]
