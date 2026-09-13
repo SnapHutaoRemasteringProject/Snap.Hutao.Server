@@ -17,7 +17,7 @@ public class WallpaperController : ControllerBase
 
     private readonly HttpClient httpClient;
     private readonly AppDbContext dbContext;
-    private readonly string upstreamUrl = "https://api.gentle.house/wallpaper/";
+    private readonly string upstreamUrl = "https://api.snapgenshin.cn/wallpaper/";
 
     public WallpaperController(HttpClient httpClient, AppDbContext dbContext)
     {
