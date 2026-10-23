@@ -13,5 +13,5 @@ public sealed class AppOptions
 
     public string StaticZipBaseUrl { get; set; } = default!;
 
-    public string StaticClientBaseUrl { get; set; } = "https://static.snaphutaorp.org/client/";
+    public string StaticClientBaseUrl { get; set; } = default!;
 }

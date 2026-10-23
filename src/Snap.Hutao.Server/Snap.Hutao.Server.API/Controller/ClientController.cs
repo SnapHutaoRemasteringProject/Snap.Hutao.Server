@@ -37,7 +37,7 @@ public class ClientController : ControllerBase
             "version so conditional requests are honored.")]
     public async Task<IActionResult> GetClientFileAsync(string fileName, CancellationToken token)
     {
-        string staticUrl = $"{appOptions.StaticClientBaseUrl}{fileName}.json";
+        string staticUrl = $"{appOptions.StaticClientBaseUrl}/{fileName}.json";
 
         using HttpRequestMessage request = new(HttpMethod.Get, staticUrl);
         HttpResponseMessage? response;
