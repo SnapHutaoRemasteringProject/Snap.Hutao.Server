@@ -34,6 +34,42 @@ public class APIController : ControllerBase
         this.logger = logger;
     }
 
+    [HttpGet("git-repository/all")]
+    [SwaggerOperation(
+        Summary = "Returns the registered Git repositories",
+        Description = """
+            Returns every Git repository entry known to the server.
+
+            Query fields:
+            - name: optional; when present only repositories whose name contains it are returned.
+
+            Response data fields:
+            - name: the repository name.
+            - friendly_name: the display name of the repository.
+            - https_url: the HTTPS clone URL.
+            - web_url: the browsable web URL.
+            - type: the repository category.
+
+            Caller notes:
+            - An omitted name returns the complete list.
+            - The result is not paginated, so cache it on the caller side if it is requested often.
+            """)]
+    public async Task<IActionResult> GetAllGitRepositories([FromQuery] string? name = null)
+    {
+        IQueryable<GitRepository> query = appDbContext.GitRepositories;
+
+        if (!string.IsNullOrEmpty(name))
+        {
+            query = query.Where(r => r.Name.Contains(name));
+        }
+
+        List<GitRepository> gitRepositories = await query
+            .ToListAsync()
+            .ConfigureAwait(false);
+
+        return Response<List<GitRepository>>.Success("OK", gitRepositories);
+    }
+
     [HttpGet("static/raw/{category}/{fileName}")]
     [SwaggerOperation(
         Summary = "Redirects to a raw static image",
