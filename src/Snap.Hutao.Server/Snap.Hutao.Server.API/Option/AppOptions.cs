@@ -1,4 +1,4 @@
-﻿// Copyright (c) DGP Studio. All rights reserved.
+// Copyright (c) DGP Studio. All rights reserved.
 // Licensed under the MIT license.
 
 namespace Snap.Hutao.Server.API.Option;
@@ -14,4 +14,10 @@ public sealed class AppOptions
     public string StaticZipBaseUrl { get; set; } = default!;
 
     public string StaticClientBaseUrl { get; set; } = default!;
+
+    public string StaticLowRawBaseUrl { get; set; } = default!;
+
+    public string StaticLowZipBaseUrl { get; set; } = default!;
+
+    public string StaticSizeUrl { get; set; } = default!;
 }
