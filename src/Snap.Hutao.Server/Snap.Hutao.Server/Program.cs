@@ -1,18 +1,13 @@
 ﻿// Copyright (c) DGP Studio. All rights reserved.
 // Licensed under the MIT license.
 
-using Disqord;
-using Disqord.Bot.Hosting;
-using Disqord.Gateway;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.OpenApi.Models;
 using Quartz;
 using Quartz.AspNetCore;
 using Quartz.Simpl;
 using Sentry;
 using Snap.Hutao.Server.Controller.Filter;
-using Snap.Hutao.Server.Discord;
 using Snap.Hutao.Server.Job;
 using Snap.Hutao.Server.Model.Context;
 using Snap.Hutao.Server.Model.Entity.Passport;
@@ -22,7 +17,6 @@ using Snap.Hutao.Server.Service;
 using Snap.Hutao.Server.Service.Afdian;
 using Snap.Hutao.Server.Service.Announcement;
 using Snap.Hutao.Server.Service.Authorization;
-using Snap.Hutao.Server.Service.Discord;
 using Snap.Hutao.Server.Service.Distribution;
 using Snap.Hutao.Server.Service.Expire;
 using Snap.Hutao.Server.Service.GachaLog;
@@ -38,7 +32,6 @@ using Snap.Hutao.Server.Service.RoleCombat;
 using Snap.Hutao.Server.Service.Sentry;
 using Snap.Hutao.Server.Service.Telemetry;
 using Swashbuckle.AspNetCore.SwaggerUI;
-using System.Net;
 
 namespace Snap.Hutao.Server;
 
@@ -51,7 +44,7 @@ public static class Program
         appBuilder.WebHost.UseSentry(options =>
         {
             options.Release = $"{DateTimeOffset.Now:yyyy.M.d.Hm}";
-            options.Dsn = "https://7de19654a539bfdd56a798ce89e85137@host.docker.internal:9510/7";
+            options.Dsn = "https://5d74a5f90604c9980ece1cc91ce0dd2c@o4510769861820416.ingest.us.sentry.io/4510769863589888";
             options.TracesSampleRate = 1D;
             options.SendDefaultPii = true;
         });
